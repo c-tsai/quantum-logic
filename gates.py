@@ -65,11 +65,13 @@ class QCircuit:
         for q in self.list:
            string = string + str(q)
         return string
-    def add(self, gate, typ):
+    def __len__(self):
+        return len(self.list)
+    def add(self, circuit, typ):
         if typ == 'f':
-            self.list= self.list + [gate]
+            self.list= self.list + circuit.list
         else:
-            self.list = [gate]+ self.list
+            self.list = circuit.list+ self.list
     def reverse(self):
         self.list.reverse()
             
@@ -78,4 +80,4 @@ t= SwapGate(1,4,3)
 l= QCircuit([t])
 print(l)
 print(l.inf(3))
-'''
+''
