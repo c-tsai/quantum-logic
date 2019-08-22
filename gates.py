@@ -4,8 +4,8 @@ class TofoliGate:
         self.inv = inv
         self.length= length
     def inf(self, bit):
-        if bit == '-':
-           return '-'
+        if bit == -1:
+           return -1
         if bit&self.control == self.control:
             return bit^self.inv
         return bit
@@ -31,8 +31,8 @@ class SwapGate:
         self.bit2 = bit2
         self.length= length
     def inf(self, bit):
-        if bit == '-':
-            return '-'
+        if bit == -1:
+            return -1
         b = bit|self.bit1|self.bit2
         if bit&self.bit1==0:
             b = b -self.bit2
@@ -63,7 +63,7 @@ class QCircuit:
     def __str__(self):
         string = ''
         for q in self.list:
-           string = string + str(q)
+           string = string + str(q)+'\n'
         return string
     def __len__(self):
         return len(self.list)
@@ -74,10 +74,15 @@ class QCircuit:
             self.list = circuit.list+ self.list
     def reverse(self):
         self.list.reverse()
+        result = QCircuit(self.list.copy())
+        self.list.reverse()
+        return result
+    def cost(self, h_cost):
+        return len(self)
             
 '''
 t= SwapGate(1,4,3)
 l= QCircuit([t])
 print(l)
 print(l.inf(3))
-''
+'''
