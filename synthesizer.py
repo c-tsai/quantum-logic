@@ -177,10 +177,13 @@ class QCSynthesizer:
        
    
    def Dym(self, candi, control_min, direction):
-       cost, circuit, param, targ= 0, 0, 0, -1
+       cost, circuit, param, targ, typ= 0, 0, 0, -1, 'f'
        for t in candi:
            if direction == 'bi':
-               circuit
+               circuit, param, typ = self.select_b_or_f(0, control_min)
+           else:
+               circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min)
+           c = circuit.cost(param.hamming_cost)
        
                
    def permuting(self, alg, para, control_min, direction):
