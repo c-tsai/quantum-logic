@@ -17,7 +17,7 @@ def Hamming_Dist(bit1, bit2, bit_len):
 class QCSynthesizer:
 
    def __init__(self, table, bit_len, table_b=0):
-       self.table_f=table
+       self.table_f=table.copy()
        self.length = table.shape[0]
        self.bit_len= bit_len
        self.output_f = QCircuit([])
@@ -25,7 +25,7 @@ class QCSynthesizer:
        self.table_b = np.array(['-' for i in range(self.length)])
        self.total_hamming= 0
        if table_b == 0: self.update_table_b()
-       else: self.table_b
+       else: self.table_b.copy()
        self.generate_all_c_line()
 
 
@@ -56,6 +56,7 @@ class QCSynthesizer:
               del temp
           result.add(result_gate,typ)
           del candi
+          b = result_gate.inf(b)
        return result, param
 
 
@@ -86,20 +87,20 @@ class QCSynthesizer:
                self.table_b[self.table]= i
 
    def add(self, circuit, typ, table_b=0, table_f=0, table_h=0):
-       if table_f != 0: self.table_f= table_f
+       if table_f != 0: self.table_f= table_f.copy()
        elif typ == 'f':
            for i in range(self.length):
                self.table_f[i]=circuit.inf(self.table_f[i])
-           self.output_f.add(circuit, typ)
        else:
            temp = np.array(['-'for i in range(self.length)])
            for i in range(self.length):
                n= circuit.inf(i)
                if not n=='-': temp[i]=self.table_f[n] 
            self.table_f=temp
-       if table_h != 0: self.total_hamming= table_h
+       self.output_f.add(circuit, typ)
+       if table_h != 0: self.total_hamming= table_h.copy()
        else: update_total_hamming()
-       if table_b != 0: self.table_b= table_b
+       if table_b != 0: self.table_b= table_b.copy()
        else:  update_table_b()
 
    def hamming_cost(self) 
@@ -107,4 +108,6 @@ class QCSynthesizer:
           self.update_total_hamming()
        return np.sum(self.total_hamming)
   
+
+
 
