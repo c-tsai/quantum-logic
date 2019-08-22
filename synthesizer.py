@@ -20,14 +20,14 @@ class QCSynthesizer:
 
    def __init__(self, table, bit_len, table_b=0):
        self.table_f=table.copy()
-       self.length = table.shape[0]
+       self.length = self.table_f.shape[0]
        self.bit_len= bit_len
        self.output_f = QCircuit([])
        self.output_b = QCircuit([])
        self.table_b = np.array([-1 for i in range(self.length)])
        self.total_hamming= 0
        if isinstance(table_b, int): self.update_table_b()
-       else: self.table_b.copy()
+       else: self.table_b= table_b.copy()
        self.generate_all_c_line()
 
 
@@ -88,6 +88,8 @@ class QCSynthesizer:
        for i in range(self.length):
            self.total_hamming= Hamming_Dist(i, self.table_f[i], self.bit_len)
    def update_table_b(self):
+       del self.table_b
+       self.table_b = np.array([-1 for i in range(self.length)])
        for i in range(self.length):
            if not self.table_f[i]==-1:
                self.table_b[self.table_f[i]]= i
@@ -123,8 +125,9 @@ class QCSynthesizer:
        result.add(self.output_f.reverse(),'f')
        return result
 
-   def given_order_alg(self, order, control_min=True, direction='bi'):
+   def given_order_alg(self, order, control_min, direction):
        for targ in order:
+           #print(targ)
            circuit, param, typ= 0, 0, 'f'
            if direction=='bi':
                circuit, param, typ = self.select_b_or_f(targ, control_min)
@@ -139,12 +142,81 @@ class QCSynthesizer:
            if not (self.table_f[targ]==targ or self.table_f[targ]==-1):
                raise ValueError(targ, self.table_f[targ])
                
+   def dynamic_proto(self, pick_func, control_min, direction):
+       circuit, param, typ = 0, 0, 'f'
+       if direction=='bi':
+           circuit, param, typ = self.select_b_or_f(0, control_min)
+       else:
+           circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min)
+       self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
+       self.all_c_line.remove(0)
+       candi = set([])
+       for i in range(self.bit_len):
+           candi.add(2**i)
+       while candi.size != 0:
+           circuit, param, targ, typ = pick_func(candi)
+           self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
+           self.all_c_line.remove(targ)
+           candi.remove(targ)
+           new = set([])
+           for t in candi: new.add(t|targ)
+           candi = candi.union(new)
+           
+           
+   def BFS(self, candi, control_min, direction):
+       weight, targ= 100000, -1
+       for t in candi:
+            w = Hamming_Dist(t, 0, self.bit_len)
+            if w < weight: targ, weight = t, w
+       circuit, param, typ = 0, 0, 'f'
+       if direction=='bi':
+           circuit, param, typ = self.select_b_or_f(targ, control_min)
+       else:
+           circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min)
+       return circuit, param, targ, typ
+       
+   
+   def Dym(self, candi, control_min, direction):
+       cost, circuit, param, targ= 0, 0, 0, -1
+       for t in candi:
+           if direction == 'bi':
+               circuit
+       
+               
+   def permuting(self, alg, para, control_min, direction):
+       q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
+       q.algorithm_selector(alg, para, control_min, direction)
+       h_cost, qc= q.hamming_cost(), q.output_circuit()
+       self.output_b, self.output_f, cost = q.output_b, q.output_f, qc.cost(h_cost)
+       for i in range( self.bit_len-1):
+           for j in range(i+1, self.bit_len):
+               q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
+               q.add(QCircuit([SwapGate(2**i, 2**j, self.bit_len)]), 'f')
+               q.algorithm_selector(alg, para, control_min, direction)
+               h_cost = q.hamming_cost()
+               qc = q.output_circuit()
+               if qc.cost(h_cost) < cost:
+                   self.output_b, self.output_f, cost= q.output_b, q.output_f, qc.cost(h_cost)
+      
+   def algorithm_selector(self, string, para, control_min, direction):
+       if string == 'given_order_alg':
+           self.given_order_alg(para, control_min, direction)
+           
+           
+   def Order_Algorithm(self, order, permute=True, control_min=True, direction='bi'):
+       if permute: 
+           self.permuting('given_order_alg', order, control_min, direction)
+       else:
+           self.given_order_alg(order, control_min, direction)
+           
+
+       
            
   
 
 table = np.array([-1,6,5,-1,-1,0,-1,2])
 q= QCSynthesizer(table, 3)
-q.given_order_alg(range(8), True)
+q.Order_Algorithm(range(8), True)
 qc = q.output_circuit()
 #print(q.output_b)
 #print(q.output_f)
