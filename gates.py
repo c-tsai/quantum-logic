@@ -78,7 +78,7 @@ class QCircuit:
         self.list.reverse()
         return result
     def cost(self, h_cost):
-        return len(self)
+        return h_cost
             
 '''
 t= SwapGate(1,4,3)
