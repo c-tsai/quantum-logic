@@ -70,9 +70,12 @@ class QCSynthesizer:
                                           targ, 'f', control_min)
        circuit_b, param_b= self.gate_syns(targ, self.table_b[targ], 
                                           'b', control_min)
-       if len(circuit_b)==0 or circuit_f.cost(param_f.hamming_cost()) < circuit_b.cost(param_b.hamming_cost) :
-           return circuit_f, param_f, 'f'
-       else: return circuit_b, param_b, 'b'
+       #print(circuit_b)
+       #print('    ')
+       #print(circuit_f)
+       if len(circuit_f)==0 or len(circuit_b)!=0 and circuit_b.cost(param_b.hamming_cost()) < circuit_f.cost(param_f.hamming_cost()) :
+           return circuit_b, param_b, 'b'
+       else: return circuit_f, param_f, 'f'
        
 
         
@@ -139,7 +142,7 @@ class QCSynthesizer:
            
   
 
-table = np.array([1,6,5,3,4,0,7,2])
+table = np.array([-1,6,5,-1,-1,0,-1,2])
 q= QCSynthesizer(table, 3)
 q.given_order_alg(range(8), True)
 qc = q.output_circuit()
