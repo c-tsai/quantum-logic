@@ -14,9 +14,16 @@ result= np.zeros((20)).astype(int)
 for idx, row in df.iterrows():
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.given_order_alg(range(2**bit_len), control_min=False, direction= 'uni')
+    q.BFS_Algorithm(permute=True, control_min=True, direction= 'bi')
     qc= q.output_circuit()
     result[len(qc)] = result[len(qc)] + 1
-for i in result:
-    print(result)
+    for i in range(len(row)):
+        if not row[i]== qc.inf(i):
+            raise ValueError
+count, s= 0, 0
+for i in range(result.shape[0]):
+    print(result[i])
+    count += i*result[i]
+    s += result[i]
+print('\n'+str(count/s))
     
