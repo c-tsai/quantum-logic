@@ -167,17 +167,18 @@ class QCSynthesizer:
            circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min)
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
        self.all_c_line.remove(0)
-       candi = set([])
+       candi, done = set([]), set([0])
        for i in range(self.bit_len):
            candi.add(2**i)
-       while candi.size != 0:
-           circuit, param, targ, typ = pick_func(candi)
+       while candi:
+           circuit, param, targ, typ = pick_func(candi, control_min, direction)
+           #print(candi)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            self.all_c_line.remove(targ)
-           candi.remove(targ)
            new = set([])
-           for t in candi: new.add(t|targ)
-           candi = candi.union(new)
+           for t in done: new.add(t|targ)
+           done.add(targ)
+           candi = candi.union(new)-done
            
            
    def BFS(self, candi, control_min, direction):
@@ -194,7 +195,7 @@ class QCSynthesizer:
        
    
    def Dym(self, candi, control_min, direction):
-       cost, circuit, param, targ, typ= 0, 0, 0, -1, 'f'
+       cost, circuit, param, targ, typ= 10000000, 0, 0, -1, 'f'
        for t in candi:
            circuit_t, param_t, typ_t = 0, 0, 0
            if direction == 'bi':
@@ -202,7 +203,7 @@ class QCSynthesizer:
            else:
                circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min)
                typ_t = 'f'
-           c = circuit.cost(param.hamming_cost())
+           c = circuit_t.cost(param_t.hamming_cost())
            if c < cost: 
                del circuit, param
                cost, circuit, param, targ, typ = c, circuit_t, param_t, t, typ_t
@@ -230,7 +231,7 @@ class QCSynthesizer:
        if string == 'given_order_alg':
            self.given_order_alg(para, control_min, direction)
        elif string == 'BFS':
-           self.dynamic_proto(self.BFS, contol_min, direction)
+           self.dynamic_proto(self.BFS, control_min, direction)
        elif string == 'Dym':
            self.dynamic_proto(self.Dym, control_min, direction)
            
@@ -269,14 +270,14 @@ class QCSynthesizer:
        
            
   
-
+'''
 table = np.array([-1,6,5,-1,-1,0,-1,2])
 q= QCSynthesizer(table, 3)
-q.Order_Algorithm(range(8), True)
+q.BFS_Algorithm(permute=True, control_min=True, direction='bi')
 qc = q.output_circuit()
 #print(q.output_b)
 #print(q.output_f)
 print(qc)
 for i in range(8):
     print(qc.inf(i))
-
+'''
