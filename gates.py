@@ -9,6 +9,10 @@ class TofoliGate:
         if bit&self.control == self.control:
             return bit^self.inv
         return bit
+    #def cost():
+    #   count, c =0, self.control
+    #    for i in range(self.length):
+            
     def __str__(self):
         dot, xor, string= self.control, self.inv, '--'
         for i in range(self.length):
