@@ -17,12 +17,12 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi')
+    q.Dym_Algorithm(permute=False, control_min=True, direction= 'bi')
     qc= q.output_circuit()
     result[len(qc), x] = result[len(qc), x] + 1
-#    for i in range(len(row)):
-#        if not row[i]== qc.inf(i):
-#            raise ValueError('wrong result')
+    for i in range(len(row)):
+        if not row[i]== qc.inf(i) and not row[i]== -1:
+            raise ValueError('wrong result '+ str(row[i])+ ' to '+ str(qc.inf(i)))
 res, count, s= np.sum(result, axis=1), np.zeros((9)), np.zeros((9))
 for i in range(result.shape[0]):
     print(res[i])
@@ -33,4 +33,7 @@ print('\n')
 r = np.divide(count, s)
 for i in r:
     print(i)
+
+print('\n')
+r = sum(count)/sum(s)
     
