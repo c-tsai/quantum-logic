@@ -17,7 +17,7 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.Dym_Algorithm(permute=False, control_min=True, direction= 'bi')
+    q.Dym_Algorithm(permute=False, control_min=False, direction= 'bi')
     qc= q.output_circuit()
     result[len(qc), x] = result[len(qc), x] + 1
     for i in range(len(row)):
@@ -35,5 +35,7 @@ for i in r:
     print(i)
 
 print('\n')
-r = sum(count)/sum(s)
+print(sum(count)/sum(s))
+print(count)
+print(s)
     
