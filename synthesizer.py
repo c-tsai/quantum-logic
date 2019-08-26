@@ -71,6 +71,12 @@ class QCSynthesizer:
 
 
    def select_b_or_f(self, targ, control_min):
+       if self.table_b[targ]== -1:
+           c, p =self.gate_syns(self.table_f[targ], targ, 'f', control_min)
+           return c, p , 'f'
+       if self.table_f[targ]== -1:
+           c, p =  self.gate_syns(targ, self.table_b[targ], 'b', control_min)
+           return c, p, 'b'
        circuit_f, param_f= self.gate_syns(self.table_f[targ], 
                                           targ, 'f', control_min)
        circuit_b, param_b= self.gate_syns(targ, self.table_b[targ], 
@@ -78,7 +84,7 @@ class QCSynthesizer:
        #print(circuit_b)
        #print('    ')
        #print(circuit_f)
-       if len(circuit_f)==0 or len(circuit_b)!=0 and circuit_b.cost(param_b.hamming_cost()) < circuit_f.cost(param_f.hamming_cost()) :
+       if circuit_b.cost(param_b.hamming_cost()) < circuit_f.cost(param_f.hamming_cost()) :
            return circuit_b, param_b, 'b'
        else: return circuit_f, param_f, 'f'
        
@@ -155,9 +161,9 @@ class QCSynthesizer:
            #print('           ')
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            self.all_c_line.remove(targ)
-       for targ in order:
-           if not (self.table_f[targ]==targ or self.table_f[targ]==-1):
-               raise ValueError(targ, self.table_f[targ])
+       #for targ in order:
+       #    if not (self.table_f[targ]==targ or self.table_f[targ]==-1):
+       #        raise ValueError(targ, self.table_f[targ])
                
    def dynamic_proto(self, pick_func, control_min, direction):
        circuit, param, typ = 0, 0, 'f'
