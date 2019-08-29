@@ -17,7 +17,7 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.DFS_Algorithm(permute=True, control_min=True, direction= 'bi')
+    q.Dym_Algorithm(permute=True, control_min=True, direction= 'bi')
     qc= q.output_circuit()
     result[len(qc), x] = result[len(qc), x] + 1
     for i in range(len(row)):
