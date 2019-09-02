@@ -16,6 +16,7 @@ file = open(name+'.csv', 'r')
 my_reader = csv.reader(file, delimiter= ',')
 result= np.zeros((20,9)).astype(int)
 idx=0
+
 for row in my_reader:
     x=8
     for i in row:
@@ -33,17 +34,19 @@ for row in my_reader:
     #result[string[-2], x] = result[string[-2], x] + 1
     
 res, count, s= np.sum(result, axis=1), np.zeros((9)), np.zeros((9))
+f= open('result.txt', 'w+')
 for i in range(result.shape[0]):
-    print(res[i])
+    f.write(res[i])
     for j in range(9):
         count[j] += i*result[i, j]
         s[j] += result[i, j]
-print('\n')
+f.write('\n')
 r = np.divide(count, s)
 for i in r:
-    print(i)
+    f.write(i)
 
-print('\n')
-print(sum(count)/sum(s))
+f.write('\n')
+f.write(sum(count)/sum(s))
+f.close()
 
     
