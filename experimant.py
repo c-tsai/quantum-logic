@@ -9,7 +9,7 @@ import pandas as pd
 from synthesizer import QCSynthesizer
 bit_len=3
 
-df = pd.read_csv('exhaustive_partial.csv')
+df = pd.read_csv('exhaustive.csv')
 result= np.zeros((20,9)).astype(int)
 for idx, row in df.iterrows():
     x=8
@@ -17,25 +17,25 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.DFS_Algorithm(permute=True, control_min=False, direction= 'bi')
+    q.DFS_Algorithm(permute=False, control_min=False, direction= 'uni')
     qc= q.output_circuit()
     result[len(qc), x] = result[len(qc), x] + 1
     for i in range(len(row)):
         if not row[i]== qc.inf(i) and not row[i]== -1:
             raise ValueError('wrong result '+ str(row[i])+ ' to '+ str(qc.inf(i)))
 res, count, s= np.sum(result, axis=1), np.zeros((9)), np.zeros((9))
+f= open('result.txt', 'w+')
 for i in range(result.shape[0]):
-    print(res[i])
+    f.write(str(res[i])+ '\n')
     for j in range(9):
         count[j] += i*result[i, j]
         s[j] += result[i, j]
-print('\n')
-r = np.divide(count, s)
-for i in r:
-    print(i)
+f.write('\n')
+#r = np.divide(count, s)
+#for i in r:
+#    f.write(str(i))
 
-print('\n')
-print(sum(count)/sum(s))
-#print(count)
-#print(s)
+f.write('\n')
+f.write(str(sum(count)/sum(s)))
+f.close()
     
