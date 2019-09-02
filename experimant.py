@@ -9,7 +9,7 @@ import pandas as pd
 from synthesizer import QCSynthesizer
 bit_len=3
 
-df = pd.read_csv('exhaustive.csv')
+df = pd.read_csv('exhaustive_partial.csv')
 result= np.zeros((20,9)).astype(int)
 for idx, row in df.iterrows():
     x=8
@@ -17,7 +17,7 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.DFS_Algorithm(permute=False, control_min=False, direction= 'uni')
+    q.BFS_Algorithm(permute=True, control_min=False, direction= 'bi')
     qc= q.output_circuit()
     result[len(qc), x] = result[len(qc), x] + 1
     for i in range(len(row)):
@@ -31,9 +31,9 @@ for i in range(result.shape[0]):
         count[j] += i*result[i, j]
         s[j] += result[i, j]
 f.write('\n')
-#r = np.divide(count, s)
-#for i in r:
-#    f.write(str(i))
+r = np.divide(count, s)
+for i in r:
+    f.write(str(i))
 
 f.write('\n')
 f.write(str(sum(count)/sum(s)))
