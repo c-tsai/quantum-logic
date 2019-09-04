@@ -33,7 +33,7 @@ for i in range(result.shape[0]):
 f.write('\n')
 r = np.divide(count, s)
 for i in r:
-    f.write(str(i))
+    f.write(str(i)+ '\n')
 
 f.write('\n')
 f.write(str(sum(count)/sum(s)))
