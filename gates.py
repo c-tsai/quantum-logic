@@ -9,9 +9,9 @@ class TofoliGate:
         if bit&self.control == self.control:
             return bit^self.inv
         return bit
-    #def cost():
-    #   count, c =0, self.control
-    #    for i in range(self.length):
+    def cost():
+        count, c =0, self.control
+        for i in range(self.length):
             
     def __str__(self):
         dot, xor, string= self.control, self.inv, '--'
@@ -81,8 +81,11 @@ class QCircuit:
         result = QCircuit(self.list.copy())
         self.list.reverse()
         return result
-    def cost(self, h_cost):
-        return len(self)
+    def cost(self, h_cost, typ='length'):
+        if typ == 'length':
+            return len(self)
+        if typ == 'q_l':
+            
             
 '''
 t= SwapGate(1,4,3)
