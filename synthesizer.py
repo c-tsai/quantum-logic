@@ -148,12 +148,12 @@ class QCSynthesizer:
 #####################################
 
 
-   def given_order_alg(self, order, control_min, direction):
+   def given_order_alg(self, order, control_min, direction, cost_typ):
        for targ in order:
            #print(targ)
            circuit, param, typ= 0, 0, 'f'
            if direction=='bi':
-               circuit, param, typ = self.select_b_or_f(targ, control_min)
+               circuit, param, typ = self.select_b_or_f(targ, control_min, cost_typ)
            else:
                circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min)
            #print(circuit)
@@ -165,10 +165,10 @@ class QCSynthesizer:
        #    if not (self.table_f[targ]==targ or self.table_f[targ]==-1):
        #        raise ValueError(targ, self.table_f[targ])
                
-   def dynamic_proto(self, pick_func, control_min, direction):
+   def dynamic_proto(self, pick_func, control_min, direction, cost_typ):
        circuit, param, typ = 0, 0, 'f'
        if direction=='bi':
-           circuit, param, typ = self.select_b_or_f(0, control_min)
+           circuit, param, typ = self.select_b_or_f(0, control_min, cost_typ)
        else:
            circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min)
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
@@ -177,7 +177,7 @@ class QCSynthesizer:
        for i in range(self.bit_len):
            candi.add(2**i)
        while candi:
-           circuit, param, targ, typ = pick_func(candi, control_min, direction)
+           circuit, param, targ, typ = pick_func(candi, control_min, direction, cost_typ)
            #print(candi)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            self.all_c_line.remove(targ)
@@ -187,14 +187,14 @@ class QCSynthesizer:
            candi = candi.union(new)-done
            
            
-   def BFS(self, candi, control_min, direction):
+   def BFS(self, candi, control_min, direction, cost_typ):
        weight, targ= 100000, -1
        for t in candi:
             w = Hamming_Dist(t, 0, self.bit_len)
             if w < weight: targ, weight = t, w
        circuit, param, typ = 0, 0, 'f'
        if direction=='bi':
-           circuit, param, typ = self.select_b_or_f(targ, control_min)
+           circuit, param, typ = self.select_b_or_f(targ, control_min, cost_typ)
        else:
            circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min)
        return circuit, param, targ, typ
@@ -205,7 +205,7 @@ class QCSynthesizer:
        for t in candi:
            circuit_t, param_t, typ_t = 0, 0, 0
            if direction == 'bi':
-               circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min)
+               circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
            else:
                circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min)
                typ_t = 'f'
@@ -227,19 +227,19 @@ class QCSynthesizer:
            for j in range(i+1, self.bit_len):
                q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
                q.add(QCircuit([SwapGate(2**i, 2**j, self.bit_len)]), 'f')
-               q.algorithm_selector(alg, para, control_min, direction)
+               q.algorithm_selector(alg, para, control_min, direction, cost_typ)
                h_cost = q.hamming_cost()
                qc = q.output_circuit()
-               if qc.cost(h_cost) < cost:
+               if qc.cost(h_cost, cost_typ) < cost:
                    self.output_b, self.output_f, cost= q.output_b, q.output_f, qc.cost(h_cost)
       
-   def algorithm_selector(self, string, para, control_min, direction):
+   def algorithm_selector(self, string, para, control_min, direction, cost_typ):
        if string == 'given_order_alg':
-           self.given_order_alg(para, control_min, direction)
+           self.given_order_alg(para, control_min, direction, cost_typ)
        elif string == 'BFS':
-           self.dynamic_proto(self.BFS, control_min, direction)
+           self.dynamic_proto(self.BFS, control_min, direction, cost_typ)
        elif string == 'Dym':
-           self.dynamic_proto(self.Dym, control_min, direction)
+           self.dynamic_proto(self.Dym, control_min, direction, cost_typ)
            
 
 ###################
@@ -247,32 +247,32 @@ class QCSynthesizer:
 ###################
           
  
-   def Order_Algorithm(self, order, permute=True, control_min=True, direction='bi'):
+   def Order_Algorithm(self, order, permute=True, control_min=True, direction='bi', cost_typ= 'length'):
        if permute: 
-           self.permuting('given_order_alg', order, control_min, direction)
+           self.permuting('given_order_alg', order, control_min, direction, cost_typ)
        else:
-           self.given_order_alg(order, control_min, direction)
+           self.given_order_alg(order, control_min, direction, cost_typ)
            
 
-   def DFS_Algorithm(self, permute=True, control_min=True, direction='bi'):
+   def DFS_Algorithm(self, permute=True, control_min=True, direction='bi', cost_typ='length'):
        if permute: 
-           self.permuting('given_order_alg', range(self.length), control_min, direction)
+           self.permuting('given_order_alg', range(self.length), control_min, direction, cost_typ)
        else:
-           self.given_order_alg(range(self.length), control_min, direction)
+           self.given_order_alg(range(self.length), control_min, direction, cost_typ)
 
 
-   def BFS_Algorithm(self, permute=True, control_min=True, direction='bi'):
+   def BFS_Algorithm(self, permute=True, control_min=True, direction='bi', cost_typ='length'):
        if permute: 
-           self.permuting('BFS', [], control_min, direction)
+           self.permuting('BFS', [], control_min, direction, cost_typ)
        else:
-           self.dynamic_proto(self.BFS, control_min, direction)
+           self.dynamic_proto(self.BFS, control_min, direction, cost_typ)
 
 
-   def Dym_Algorithm(self, permute=True, control_min=True, direction='bi'):
+   def Dym_Algorithm(self, permute=True, control_min=True, direction='bi', cost_typ='length'):
        if permute: 
-           self.permuting('Dym', [], control_min, direction)
+           self.permuting('Dym', [], control_min, direction, cost_typ)
        else:
-           self.dynamic_proto(self.Dym, control_min, direction)
+           self.dynamic_proto(self.Dym, control_min, direction, cost_typ)
        
            
   
