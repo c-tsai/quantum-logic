@@ -70,7 +70,7 @@ class QCSynthesizer:
        return result, param
 
 
-   def select_b_or_f(self, targ, control_min):
+   def select_b_or_f(self, targ, control_min, cost_typ):
        if self.table_b[targ]== -1:
            c, p =self.gate_syns(self.table_f[targ], targ, 'f', control_min)
            return c, p , 'f'
@@ -84,7 +84,7 @@ class QCSynthesizer:
        #print(circuit_b)
        #print('    ')
        #print(circuit_f)
-       if circuit_b.cost(param_b.hamming_cost()) < circuit_f.cost(param_f.hamming_cost()) :
+       if circuit_b.cost(param_b.hamming_cost(), cost_typ) < circuit_f.cost(param_f.hamming_cost(), cost_typ) :
            return circuit_b, param_b, 'b'
        else: return circuit_f, param_f, 'f'
        
@@ -200,7 +200,7 @@ class QCSynthesizer:
        return circuit, param, targ, typ
        
    
-   def Dym(self, candi, control_min, direction):
+   def Dym(self, candi, control_min, direction, cost_typ):
        cost, circuit, param, targ, typ= 10000000, 0, 0, -1, 'f'
        for t in candi:
            circuit_t, param_t, typ_t = 0, 0, 0
@@ -209,7 +209,7 @@ class QCSynthesizer:
            else:
                circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min)
                typ_t = 'f'
-           c = circuit_t.cost(param_t.hamming_cost())
+           c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
            if c < cost: 
                del circuit, param
                cost, circuit, param, targ, typ = c, circuit_t, param_t, t, typ_t
@@ -218,11 +218,11 @@ class QCSynthesizer:
        return circuit, param, targ, typ
        
                
-   def permuting(self, alg, para, control_min, direction):
+   def permuting(self, alg, para, control_min, direction, cost_typ):
        q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
        q.algorithm_selector(alg, para, control_min, direction)
        h_cost, qc= q.hamming_cost(), q.output_circuit()
-       self.output_b, self.output_f, cost = q.output_b, q.output_f, qc.cost(h_cost)
+       self.output_b, self.output_f, cost = q.output_b, q.output_f, qc.cost(h_cost, cost_typ)
        for i in range( self.bit_len-1):
            for j in range(i+1, self.bit_len):
                q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
