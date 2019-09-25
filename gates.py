@@ -84,7 +84,8 @@ class QCircuit:
     def cost(self, h_cost, typ='length'):
         if typ == 'length':
             return len(self)
-        if typ == 'q_l':
+        if typ == 'Hamming':
+            return h_cost
             
             
 '''
