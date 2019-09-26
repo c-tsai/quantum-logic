@@ -17,14 +17,14 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.BFS_Algorithm(permute=True, control_min=False, direction= 'bi')
+    q.Dym_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='Hamming')
     qc= q.output_circuit()
     result[len(qc), x] = result[len(qc), x] + 1
     for i in range(len(row)):
         if not row[i]== qc.inf(i) and not row[i]== -1:
             raise ValueError('wrong result '+ str(row[i])+ ' to '+ str(qc.inf(i)))
 res, count, s= np.sum(result, axis=1), np.zeros((9)), np.zeros((9))
-f= open('result.txt', 'w+')
+f= open('result_hammingcost_Dym.txt', 'w+')
 for i in range(result.shape[0]):
     f.write(str(res[i])+ '\n')
     for j in range(9):
