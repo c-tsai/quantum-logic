@@ -11,7 +11,13 @@ class TofoliGate:
         return bit
 #    def cost():
 #        count, c =0, self.control
-            
+    def control_num(self):
+        num, point = 0, 1
+        for i in range(self.length):
+            if self.control&point == point:
+                num += 1
+            point *= 2
+        return num
     def __str__(self):
         dot, xor, string= self.control, self.inv, '--'
         for i in range(self.length):
@@ -42,6 +48,8 @@ class SwapGate:
         if bit&self.bit2==0:
             b = b - self.bit1
         return b
+    def control_num(self):
+        return 0
     def __str__(self):
         swap, string= self.bit1+self.bit2, '--'
         for i in range(self.length):
