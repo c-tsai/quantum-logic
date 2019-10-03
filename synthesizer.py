@@ -37,6 +37,9 @@ class QCSynthesizer:
 
 
    def gate_syns(self, i_bit, f_bit, typ, control_min):
+       
+       if not control_min: return self.gate_syns_2(i_bit, f_bit, typ)
+       
        b, result, param= i_bit, QCircuit([]), self
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
@@ -46,18 +49,22 @@ class QCSynthesizer:
                   for c in self.all_c_line:
                       if c&point == 0 and c&b==c:
                           candi.add(TofoliGate(c,point,self.bit_len))
-                          if not control_min: break
-                  if not len(candi)==0 and not control_min: break
+                          #if not control_min: break
+                  #if not len(candi)==0 and not control_min: break
               point *=2
 
-          result_gate, cost= 0, 100000000
+          result_gate, cost, control_num= 0, 100000000, 10000000
           for q in candi:
               temp = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
               temp_c = copy.deepcopy(result)
               temp_c.add(QCircuit([q]), 'f')
               temp.add(temp_c,typ)
               if temp.hamming_cost() < cost:
-                  result_gate, cost= temp_c, temp.hamming_cost()
+                  result_gate, cost, control_num= temp_c, temp.hamming_cost(), q.control_num()
+                  del param
+                  param= temp
+              elif temp.hamming_cost() == cost and q.control_num() < control_num:
+                  result_gate, cost, control_num= temp_c, temp.hamming_cost(), q.control_num()
                   del param
                   param= temp
               else: del temp_c
@@ -67,6 +74,23 @@ class QCSynthesizer:
           del candi, result
           result = result_gate
           b = result.inf(i_bit)
+       return result, param
+   
+   def gate_syns_2(self, i_bit, f_bit, typ):
+       result= QCircuit([])
+       if i_bit==-1 or f_bit==-1:   return result, self
+       diff_1, diff_0, point= (i_bit^f_bit)&i_bit, (i_bit^f_bit)&f_bit, 1
+       param = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
+       for i in range(self.length):
+           if not diff_0&point == 0:
+               result.add(QCircuit([TofoliGate(i_bit, point, self.bit_len)]), 'f')
+           point *=2
+       point= 1 
+       for i in range(self.length):
+           if not diff_1&point == 0:
+               result.add(QCircuit([TofoliGate(f_bit, point, self.bit_len)]), 'f')
+           point *=2  
+       param.add(result, typ)
        return result, param
 
 
