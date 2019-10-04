@@ -244,7 +244,7 @@ class QCSynthesizer:
                
    def permuting(self, alg, para, control_min, direction, cost_typ):
        q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
-       q.algorithm_selector(alg, para, control_min, direction)
+       q.algorithm_selector(alg, para, control_min, direction, cost_typ)
        h_cost, qc= q.hamming_cost(), q.output_circuit()
        self.output_b, self.output_f, cost = q.output_b, q.output_f, qc.cost(h_cost, cost_typ)
        for i in range( self.bit_len-1):
