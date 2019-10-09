@@ -36,7 +36,7 @@ class QCSynthesizer:
 ######################
 
 
-   def gate_syns(self, i_bit, f_bit, typ, control_min):
+   def gate_syns(self, i_bit, f_bit, typ, control_min, cost_typ):
        
        if not control_min: return self.gate_syns_2(i_bit, f_bit, typ)
        
@@ -53,18 +53,27 @@ class QCSynthesizer:
                   #if not len(candi)==0 and not control_min: break
               point *=2
 
-          result_gate, cost, control_num= 0, 100000000, 10000000
+          result_gate, cost_q, cost_h, control_num= 0, 100000000, 10000000, 10000000
           for q in candi:
               temp = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
               temp_c = copy.deepcopy(result)
               temp_c.add(QCircuit([q]), 'f')
               temp.add(temp_c,typ)
-              if temp.hamming_cost() < cost:
-                  result_gate, cost, control_num= temp_c, temp.hamming_cost(), q.control_num()
+              t_h, t_control = temp.hamming_cost(), q.control_num()
+              t_q = temp_c.cost(t_h, cost_typ)
+              #print(t_q)
+              #print('---------')
+              
+              if t_q < cost_q:
+                  result_gate, cost_q, cost_h, control_num = temp_c, t_q, t_h, t_control
                   del param
                   param= temp
-              elif temp.hamming_cost() == cost and q.control_num() < control_num:
-                  result_gate, cost, control_num= temp_c, temp.hamming_cost(), q.control_num()
+              elif t_q==cost_q and t_h < cost_h:
+                  result_gate, cost_q, cost_h, control_num = temp_c, t_q, t_h, t_control
+                  del param
+                  param= temp
+              elif t_q==cost_q and t_h == cost_h and t_control < control_num:
+                  result_gate, cost_q, cost_h, control_num = temp_c, t_q, t_h, t_control
                   del param
                   param= temp
               else: del temp_c
@@ -96,15 +105,15 @@ class QCSynthesizer:
 
    def select_b_or_f(self, targ, control_min, cost_typ):
        if self.table_b[targ]== -1:
-           c, p =self.gate_syns(self.table_f[targ], targ, 'f', control_min)
+           c, p =self.gate_syns(self.table_f[targ], targ, 'f', control_min, cost_typ)
            return c, p , 'f'
        if self.table_f[targ]== -1:
-           c, p =  self.gate_syns(targ, self.table_b[targ], 'b', control_min)
+           c, p =  self.gate_syns(targ, self.table_b[targ], 'b', control_min, cost_typ)
            return c, p, 'b'
        circuit_f, param_f= self.gate_syns(self.table_f[targ], 
-                                          targ, 'f', control_min)
+                                          targ, 'f', control_min, cost_typ)
        circuit_b, param_b= self.gate_syns(targ, self.table_b[targ], 
-                                          'b', control_min)
+                                          'b', control_min, cost_typ)
        #print(circuit_b)
        #print('    ')
        #print(circuit_f)
@@ -179,7 +188,7 @@ class QCSynthesizer:
            if direction=='bi':
                circuit, param, typ = self.select_b_or_f(targ, control_min, cost_typ)
            else:
-               circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min)
+               circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min, cost_typ)
            #print(circuit)
            #print(param.table_f, param.table_b, typ)
            #print('           ')
@@ -194,7 +203,7 @@ class QCSynthesizer:
        if direction=='bi':
            circuit, param, typ = self.select_b_or_f(0, control_min, cost_typ)
        else:
-           circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min)
+           circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min, cost_typ)
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
        self.all_c_line.remove(0)
        candi, done = set([]), set([0])
@@ -220,7 +229,7 @@ class QCSynthesizer:
        if direction=='bi':
            circuit, param, typ = self.select_b_or_f(targ, control_min, cost_typ)
        else:
-           circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min)
+           circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min, cost_typ)
        return circuit, param, targ, typ
        
    
@@ -231,7 +240,7 @@ class QCSynthesizer:
            if direction == 'bi':
                circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
            else:
-               circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min)
+               circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min, cost_typ)
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
            if c < cost: 
