@@ -3,6 +3,7 @@ class TofoliGate:
         self.control= control
         self.inv = inv
         self.length= length
+        self.num = '-'
     def inf(self, bit):
         if bit == -1:
            return -1
@@ -12,11 +13,14 @@ class TofoliGate:
 #    def cost():
 #        count, c =0, self.control
     def control_num(self):
+        if self.num != '-':
+            return self.num
         num, point = 0, 1
         for i in range(self.length):
             if self.control&point == point:
                 num += 1
             point *= 2
+        self.num = num
         return num
     def __str__(self):
         dot, xor, string= self.control, self.inv, '--'
@@ -90,6 +94,7 @@ class QCircuit:
         return result
     def cost(self, h_cost, typ='length'):
         if typ == 'length':
+            #print(len(self))
             return len(self)
         if typ == 'Hamming':
             return h_cost
