@@ -70,6 +70,11 @@ class SwapGate:
 class QCircuit:
     def __init__(self, q_list):
         self.list= q_list
+        self.dict = {}
+        for q in q_list:
+            if not str(q.control_num()) in self.dict:
+                self.dict[str(q.control_num)] = 1
+            else: self.dict[str(q.control_num)] += 1
     def inf(self, bit):
         b = bit
         for q in self.list:
@@ -87,6 +92,10 @@ class QCircuit:
             self.list= self.list + circuit.list
         else:
             self.list = circuit.list+ self.list
+        for key in circuit.dict:
+            if not key in self.dict:
+                self.dict[key] = circuit.dict[key]
+            else: self.dict[key] += circuit.dict[key]
     def reverse(self):
         self.list.reverse()
         result = QCircuit(self.list.copy())
@@ -98,6 +107,17 @@ class QCircuit:
             return len(self)
         if typ == 'Hamming':
             return h_cost
+        if typ[:3]=='NCV':
+            result = 0
+            n_cost, c_cost, v_cost = int(typ[-3]), int(typ[-2]), int(typ[-1])
+            for key in self.dict:
+                if key == '0':
+                   result += n_cost
+                else if key == '1':
+                   result += c_cost
+                else if key == '2':
+                   result += (2*c_cost + 3*v_cost)
+            return result 
             
             
 '''
