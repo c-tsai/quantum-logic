@@ -73,8 +73,8 @@ class QCircuit:
         self.dict = {}
         for q in q_list:
             if not str(q.control_num()) in self.dict:
-                self.dict[str(q.control_num)] = 1
-            else: self.dict[str(q.control_num)] += 1
+                self.dict[str(q.control_num())] = 1
+            else: self.dict[str(q.control_num())] += 1
     def inf(self, bit):
         b = bit
         for q in self.list:
@@ -111,11 +111,12 @@ class QCircuit:
             result = 0
             n_cost, c_cost, v_cost = int(typ[-3]), int(typ[-2]), int(typ[-1])
             for key in self.dict:
+                #print(key)
                 if key == '0':
                    result += n_cost
-                else if key == '1':
+                elif key == '1':
                    result += c_cost
-                else if key == '2':
+                elif key == '2':
                    result += (2*c_cost + 3*v_cost)
             return result 
             
