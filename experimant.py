@@ -10,9 +10,10 @@ from synthesizer import QCSynthesizer
 bit_len=3
 
 df = pd.read_csv('exhaustive_partial.csv')
-result111= np.zeros((20,9)).astype(int)
+resultG= np.zeros((20,9)).astype(int)
+result111= np.zeros((30,9)).astype(int)
 result012= np.zeros((20,9)).astype(int)
-result155= np.zeros((50,9)).astype(int)
+result155= np.zeros((100,9)).astype(int)
 
 for idx, row in df.iterrows():
     x=8
@@ -20,10 +21,11 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.BFS_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='NCV-155')
+    q.Dym_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='NCV-155')
     qc= q.output_circuit()
-    result111[len(qc), x] = result111[len(qc), x] + 1
+    resultG[len(qc), x] = result111[len(qc), x] + 1
     #print(qc.cost(0, 'NCV-155'))
+    result111[qc.cost(0, 'NCV-111'),x] = result111[qc.cost(0, 'NCV-111'),x] + 1
     result155[qc.cost(0, 'NCV-155'),x] = result155[qc.cost(0, 'NCV-155'),x] + 1
     result012[qc.cost(0, 'NCV-012'),x] = result012[qc.cost(0, 'NCV-012'),x] + 1
     for i in range(len(row)):
@@ -36,6 +38,28 @@ for idx, row in df.iterrows():
 f= open('result_NCV155_Dym.txt', 'w+')
 f.write('----gate cost ----'+ '\n')
 print('----gate cost ----')
+res, count, s= np.sum(resultG, axis=1), np.zeros((9)), np.zeros((9))
+for i in range(resultG.shape[0]):
+    f.write(str(res[i])+ '\n')
+    print(str(res[i]))
+    for j in range(9):
+        count[j] += i*resultG[i, j]
+        s[j] += resultG[i, j]
+f.write('\n')
+print('\n')
+r = np.divide(count, s)
+for i in r:
+    f.write(str(i)+ '\n')
+    print(str(i))
+
+f.write('\n')
+print('\n')
+f.write(str(sum(count)/sum(s))+ '\n')
+print(str(sum(count)/sum(s)))
+
+
+f.write('----NCV-111 cost ----'+ '\n')
+print('----NCV-111 cost ----')
 res, count, s= np.sum(result111, axis=1), np.zeros((9)), np.zeros((9))
 for i in range(result111.shape[0]):
     f.write(str(res[i])+ '\n')
@@ -52,7 +76,7 @@ for i in r:
 
 f.write('\n')
 print('\n')
-f.write(str(sum(count)/sum(s)))
+f.write(str(sum(count)/sum(s)) + '\n')
 print(str(sum(count)/sum(s)))
 
 
@@ -74,7 +98,7 @@ for i in r:
 
 f.write('\n')
 print('\n')
-f.write(str(sum(count)/sum(s)))
+f.write(str(sum(count)/sum(s)) + '\n')
 print(str(sum(count)/sum(s)))
 
 
@@ -96,7 +120,7 @@ for i in r:
 
 f.write('\n')
 print('\n')
-f.write(str(sum(count)/sum(s)))
+f.write(str(sum(count)/sum(s))+ '\n')
 print(str(sum(count)/sum(s)))
 f.close()
     
