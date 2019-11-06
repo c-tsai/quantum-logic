@@ -22,6 +22,9 @@ class TofoliGate:
             point *= 2
         self.num = num
         return num
+    def __eq__(self, other):
+       return self.control==other.control and self.inv==other.inv \
+              and self.length==other.length
     def __str__(self):
         dot, xor, string= self.control, self.inv, '--'
         for i in range(self.length):
@@ -54,6 +57,9 @@ class SwapGate:
         return b
     def control_num(self):
         return 0
+    def __eq__(self, other):
+        return self.bit1==other.bit1 and self.bit2==other.bit2 \
+               and self.length==other.length
     def __str__(self):
         swap, string= self.bit1+self.bit2, '--'
         for i in range(self.length):
@@ -87,6 +93,11 @@ class QCircuit:
         return string
     def __len__(self):
         return len(self.list)
+    def __eq__(self, other):
+        if len(self) != len(other): return False
+        for i in range(len(self)):
+            if not self.list[i]==other.list[i]:return False
+        return True
     def add(self, circuit, typ):
         if typ == 'f':
             self.list= self.list + circuit.list
