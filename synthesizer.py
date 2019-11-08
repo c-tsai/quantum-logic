@@ -317,6 +317,7 @@ qc = q.output_circuit()
 #print(q.output_b)
 #print(q.output_f)
 print(qc)
+print(qc.cost(0,"NCV-012"))
 for i in range(8):
     print(qc.inf(i))
 '''
