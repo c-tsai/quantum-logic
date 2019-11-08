@@ -11,9 +11,9 @@ bit_len=3
 
 df = pd.read_csv('exhaustive_partial.csv')
 resultG= np.zeros((20,9)).astype(int)
-result111= np.zeros((30,9)).astype(int)
-result012= np.zeros((20,9)).astype(int)
-result155= np.zeros((100,9)).astype(int)
+result111= np.zeros((100,9)).astype(int)
+result012= np.zeros((100,9)).astype(int)
+result155= np.zeros((300,9)).astype(int)
 
 for idx, row in df.iterrows():
     x=8
@@ -21,7 +21,7 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.Dym_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='NCV-155')
+    q.BFS_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='NCV-155')
     qc= q.output_circuit()
     resultG[len(qc), x] = result111[len(qc), x] + 1
     #print(qc.cost(0, 'NCV-155'))
@@ -35,7 +35,7 @@ for idx, row in df.iterrows():
 
 
 
-f= open('result_NCV155_Dym.txt', 'w+')
+f= open('result_NCV155_BFS.txt', 'w+')
 f.write('----gate cost ----'+ '\n')
 print('----gate cost ----')
 res, count, s= np.sum(resultG, axis=1), np.zeros((9)), np.zeros((9))
