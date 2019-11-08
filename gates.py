@@ -25,6 +25,8 @@ class TofoliGate:
     def __eq__(self, other):
        return self.control==other.control and self.inv==other.inv \
               and self.length==other.length
+    def __hash__(self):
+        return hash((2^self.length*self.control)+self.inv)
     def __str__(self):
         dot, xor, string= self.control, self.inv, '--'
         for i in range(self.length):
@@ -122,13 +124,14 @@ class QCircuit:
             result = 0
             n_cost, c_cost, v_cost = int(typ[-3]), int(typ[-2]), int(typ[-1])
             for key in self.dict:
-                #print(key)
                 if key == '0':
-                   result += n_cost
+                   result += n_cost*self.dict['0']
                 elif key == '1':
-                   result += c_cost
+                   result += c_cost*self.dict['1']
                 elif key == '2':
-                   result += (2*c_cost + 3*v_cost)
+                   result += (2*c_cost + 3*v_cost)*self.dict['2']
+                #print(result)
+            #print("complete")
             return result 
             
             
