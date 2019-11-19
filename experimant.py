@@ -21,7 +21,7 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.BFS_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='NCV-155')
+    q.Dym_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='NCV-012')
     qc= q.output_circuit()
     resultG[len(qc), x] = result111[len(qc), x] + 1
     #print(qc.cost(0, 'NCV-155'))
@@ -35,7 +35,7 @@ for idx, row in df.iterrows():
 
 
 
-f= open('result_NCV155_BFS.txt', 'w+')
+f= open('result_NCV012_Dym_controled.txt', 'w+')
 f.write('----gate cost ----'+ '\n')
 print('----gate cost ----')
 res, count, s= np.sum(resultG, axis=1), np.zeros((9)), np.zeros((9))
