@@ -21,3 +21,4 @@ class Table:
         del self.dict
         del self.length
     def __len__(self): return self.length
+    def copy(self): return Table(self.length, self.dict.copy())
