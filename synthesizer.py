@@ -32,12 +32,12 @@ def pla_reader(file):
 class QCSynthesizer:
 
    def __init__(self, table, bit_len, table_b=0):
-       self.table_f=table.copy()
+       self.table_f= table.copy()
        self.length = self.table_f.shape[0]
        self.bit_len= bit_len
        self.output_f = QCircuit([])
        self.output_b = QCircuit([])
-       self.table_b = np.array([-1 for i in range(self.length)])
+       self.table_b = Table(bit_len)
        self.total_hamming= 0
        if isinstance(table_b, int): self.update_table_b()
        else: self.table_b= table_b.copy()
