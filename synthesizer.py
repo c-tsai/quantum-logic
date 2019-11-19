@@ -33,7 +33,7 @@ class QCSynthesizer:
 
    def __init__(self, table, bit_len, table_b=0):
        self.table_f= table.copy()
-       self.length = self.table_f.shape[0]
+       self.length = self.table_f.length
        self.bit_len= bit_len
        self.output_f = QCircuit([])
        self.output_b = QCircuit([])
@@ -146,7 +146,7 @@ class QCSynthesizer:
            self.total_hamming= Hamming_Dist(i, self.table_f[i], self.bit_len)
    def update_table_b(self):
        del self.table_b
-       self.table_b = np.array([-1 for i in range(self.length)])
+       self.table_b = Table(self.length)
        for i in range(self.length):
            if not self.table_f[i]==-1:
                self.table_b[self.table_f[i]]= i
@@ -166,7 +166,7 @@ class QCSynthesizer:
            temp = np.array([-1 for i in range(self.length)])
            for i in range(self.length):
                n= circuit.inf(i)
-               if not n=='-': temp[i]=self.table_f[n] 
+               if not n==-1: temp[i]=self.table_f[n] 
            self.table_f=temp
        if typ == 'f':
            self.output_f.add(circuit, typ)
