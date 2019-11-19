@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
+from table import Table
 
 
 
@@ -17,16 +18,16 @@ def Hamming_Dist(bit1, bit2, bit_len):
 
 def pla_reader(file):
     f = open(file, 'r')
-    bit_len, i, array= 0, 0, 0
+    bit_len, i, t= 0, 0, 0
     for line in f:
         if i ==0 : 
             bit_len= int(line.split(' ')[0])
-            array = -1*np.ones((2^bit_len), dtype=int)
+            t = Table(bit_len)
         else: 
             res = line.split(' ')
-            array[int(res[0],2)] = int(res[1],2)
+            t[int(res[0],2)] = int(res[1],2)
         i += 1
-        return array, bit_len
+        return t, bit_len
 
 class QCSynthesizer:
 
