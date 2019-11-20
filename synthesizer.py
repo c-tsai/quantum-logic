@@ -56,7 +56,7 @@ class QCSynthesizer:
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
           diff, point, candi= b^f_bit, 1, set([])
-          for i in range(self.length):
+          for i in range(self.bit_len):
               if not diff&point == 0:
                   for c in self.all_c_line:
                       if c&point == 0 and c&b==c:
@@ -102,12 +102,12 @@ class QCSynthesizer:
        if i_bit==-1 or f_bit==-1:   return result, self
        diff_1, diff_0, point= (i_bit^f_bit)&i_bit, (i_bit^f_bit)&f_bit, 1
        param = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
-       for i in range(self.length):
+       for i in range(self.bit_len):
            if not diff_0&point == 0:
                result.add(QCircuit([TofoliGate(i_bit, point, self.bit_len)]), 'f')
            point *=2
        point= 1 
-       for i in range(self.length):
+       for i in range(self.bit_len):
            if not diff_1&point == 0:
                result.add(QCircuit([TofoliGate(f_bit, point, self.bit_len)]), 'f')
            point *=2  
