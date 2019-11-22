@@ -17,7 +17,7 @@ for spec in os.listdir(folder):
     table, bit_len = pla_reader( os.path.join(folder, spec))
     #print(array.shape, bit_len)
     Q= QCSynthesizer(table, bit_len)
-    Q.DFS_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='length')
+    Q.BFS_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='length')
     QC= Q.output_circuit()
     #print string
     for i in table:
