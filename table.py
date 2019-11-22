@@ -21,4 +21,20 @@ class Table:
         del self.dict
         del self.length
     def __len__(self): return self.length
-    def copy(self): return Table(self.length, self.dict.copy())
+    def __iter__(self):
+        self.iterator= iter(self.dict)
+        return self
+    def __next__(self): return next(self.iterator)
+    #def __str__(self): return 'Table'
+    
+    def copy(self): 
+        t = Table(self.length)
+        t.dict= self.dict.copy()
+        return t
+    
+    def summ(self):
+        result = 0
+        for i in self:
+            result += self.__getitem__(i)
+        return summ
+            
