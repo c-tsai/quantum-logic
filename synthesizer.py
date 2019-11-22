@@ -228,7 +228,9 @@ class QCSynthesizer:
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            self.all_c_line.remove(targ)
            new = set([])
-           for t in done: new.add(t|targ)
+           for t in done: 
+               if t|targ in self.table_b or t|targ in self.table_f:
+                   new.add(t|targ)
            done.add(targ)
            candi = candi.union(new)-done
            
