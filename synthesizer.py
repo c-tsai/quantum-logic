@@ -18,15 +18,16 @@ def Hamming_Dist(bit1, bit2, bit_len):
 def pla_reader(file):
     f = open(file, 'r')
     bit_len, i, array= 0, 0, 0
-    for line in f:
+    iterate = f.readlines()
+    for line in iterate:
         if i ==0 : 
             bit_len= int(line.split(' ')[0])
-            array = -1*np.ones((2^bit_len), dtype=int)
+            array = -1*np.ones((2**bit_len), dtype=int)
         else: 
             res = line.split(' ')
             array[int(res[0],2)] = int(res[1],2)
         i += 1
-        return array, bit_len
+    return array, bit_len
 
 class QCSynthesizer:
 
