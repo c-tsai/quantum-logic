@@ -143,7 +143,7 @@ class QCSynthesizer:
    def update_total_hamming(self):
        self.total_hamming= np.zeros(self.table_f.shape)
        for i in range(self.length):
-           self.total_hamming= Hamming_Dist(i, self.table_f[i], self.bit_len)
+           self.total_hamming[i]= Hamming_Dist(i, self.table_f[i], self.bit_len)
    def update_table_b(self):
        del self.table_b
        self.table_b = np.array([-1 for i in range(self.length)])
@@ -179,7 +179,7 @@ class QCSynthesizer:
        else:  self.update_table_b()
 
    def hamming_cost(self):
-       if self.total_hamming == 0:
+       if isinstance(self.total_hamming, int):
           self.update_total_hamming()
        return np.sum(self.total_hamming)
    
