@@ -22,12 +22,12 @@ def pla_reader(file):
     for line in f:
         if i ==0 : 
             bit_len= int(line.split(' ')[0])
-            t = Table(bit_len)
+            t = Table(2**bit_len)
         else: 
             res = line.split(' ')
             t[int(res[0],2)] = int(res[1],2)
         i += 1
-        return t, bit_len
+    return t, bit_len
 
 class QCSynthesizer:
 
@@ -57,7 +57,7 @@ class QCSynthesizer:
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
           diff, point, candi= b^f_bit, 1, set([])
-          for i in range(self.length):
+          for i in range(self.bit_len):
               if not diff&point == 0:
                   for c in self.all_c_line:
                       if c&point == 0 and c&b==c:
@@ -103,15 +103,15 @@ class QCSynthesizer:
        if i_bit==-1 or f_bit==-1:   return result, self
        diff_1, diff_0, point= (i_bit^f_bit)&i_bit, (i_bit^f_bit)&f_bit, 1
        param = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
-       for i in range(self.length):
+       for i in range(self.bit_len):
            if not diff_0&point == 0:
                result.add(QCircuit([TofoliGate(i_bit, point, self.bit_len)]), 'f')
            point *=2
        point= 1 
-       for i in range(self.length):
+       for i in range(self.bit_len):
            if not diff_1&point == 0:
                result.add(QCircuit([TofoliGate(f_bit, point, self.bit_len)]), 'f')
-           point *=2  
+           point *=2
        param.add(result, typ)
        return result, param
 
@@ -141,13 +141,13 @@ class QCSynthesizer:
        for i in range(self.length):
            self.all_c_line.add(i)
    def update_total_hamming(self):
-       self.total_hamming= np.zeros(self.table_f.shape)
-       for i in range(self.length):
-           self.total_hamming= Hamming_Dist(i, self.table_f[i], self.bit_len)
+       self.total_hamming= Table(self.length)
+       for i in self.table_f:
+           self.total_hamming[i]= Hamming_Dist(i, self.table_f[i], self.bit_len)
    def update_table_b(self):
        del self.table_b
        self.table_b = Table(self.length)
-       for i in range(self.length):
+       for i in self.table_f:
            if not self.table_f[i]==-1:
                self.table_b[self.table_f[i]]= i
 
@@ -160,13 +160,13 @@ class QCSynthesizer:
    def add(self, circuit, typ, table_b=0, table_f=0, table_h=0):
        if not isinstance(table_f, int): self.table_f= table_f.copy()
        elif typ == 'f':
-           for i in range(self.length):
+           for i in self.table_f:
                self.table_f[i]=circuit.inf(self.table_f[i])
        else:
-           temp = np.array([-1 for i in range(self.length)])
+           temp = Table(self.length)
            for i in range(self.length):
                n= circuit.inf(i)
-               if not n==-1: temp[i]=self.table_f[n] 
+               if not self.table_f[n]==-1: temp[i]=self.table_f[n] 
            self.table_f=temp
        if typ == 'f':
            self.output_f.add(circuit, typ)
@@ -181,7 +181,7 @@ class QCSynthesizer:
    def hamming_cost(self):
        if self.total_hamming == 0:
           self.update_total_hamming()
-       return np.sum(self.total_hamming)
+       return self.total_hamming
    
    def output_circuit(self):
        result = self.output_b.reverse()
