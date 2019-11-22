@@ -21,7 +21,7 @@ for idx, row in df.iterrows():
         if i == -1: x -= 1 
     print(idx)
     q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.BFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='NCV-111')
+    q.Dym_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
     qc= q.output_circuit()
     resultG[len(qc), x] = result111[len(qc), x] + 1
     #print(qc.cost(0, 'NCV-155'))
