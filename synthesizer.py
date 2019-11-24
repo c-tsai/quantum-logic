@@ -247,7 +247,7 @@ class QCSynthesizer:
        
    
    def Dym(self, candi, control_min, direction, cost_typ):
-       cost, circuit, param, targ, typ= 10000000, 0, 0, -1, 'f'
+       cost_q, cost_h, circuit, param, targ, typ= 10000000, 10000000, 0, 0, -1, 'f'
        for t in candi:
            circuit_t, param_t, typ_t = 0, 0, 0
            if direction == 'bi':
@@ -256,9 +256,13 @@ class QCSynthesizer:
                circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min, cost_typ)
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
-           if c < cost: 
+           h = param_t.hamming_cost()
+           if c < cost_q: 
                del circuit, param
-               cost, circuit, param, targ, typ = c, circuit_t, param_t, t, typ_t
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+           elif c==cost_q and h < cost_h: 
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
            else:
                del circuit_t, param_t
        return circuit, param, targ, typ
