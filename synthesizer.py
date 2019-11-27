@@ -1,33 +1,9 @@
-import numpy as np
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
-from table import Table
+from tools import Table, Hamming_Dist
 
 
 
-def Hamming_Dist(bit1, bit2, bit_len):
-    if bit1==-1 or bit2==-1:
-        return 0
-    diff, count= bit1^bit2, 0
-    #print(diff)
-    for i in range(bit_len):
-        if diff%2==1:
-            count += 1
-        diff = diff//2
-    return count
-
-def pla_reader(file):
-    f = open(file, 'r')
-    bit_len, i, t= 0, 0, 0
-    for line in f:
-        if i ==0 : 
-            bit_len= int(line.split(' ')[0])
-            t = Table(2**bit_len)
-        else: 
-            res = line.split(' ')
-            t[int(res[0],2)] = int(res[1],2)
-        i += 1
-    return t, bit_len
 
 class QCSynthesizer:
 
@@ -229,8 +205,7 @@ class QCSynthesizer:
            self.all_c_line.remove(targ)
            new = set([])
            for t in done: 
-               if t|targ in self.table_b or t|targ in self.table_f:
-                   new.add(t|targ)
+               new.add(t|targ)
            done.add(targ)
            candi = candi.union(new)-done
            
@@ -246,10 +221,20 @@ class QCSynthesizer:
        else:
            circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min, cost_typ)
        return circuit, param, targ, typ
-       
+  
+     
+   def DFS(self, candi, control_min, direction, cost_typ):
+       targ = min(candi)
+       circuit, param, typ = 0, 0, 'f'
+       if direction=='bi':
+           circuit, param, typ = self.select_b_or_f(targ, control_min, cost_typ)
+       else:
+           circuit, param= self.gate_syns(self.table_f[targ], targ, 'f', control_min, cost_typ)
+       return circuit, param, targ, typ
    
+    
    def Dym(self, candi, control_min, direction, cost_typ):
-       cost, circuit, param, targ, typ= 10000000, 0, 0, -1, 'f'
+       cost, hamm, circuit, param, targ, typ= 10000000, 10000000, 0, 0, -1, 'f'
        for t in candi:
            circuit_t, param_t, typ_t = 0, 0, 0
            if direction == 'bi':
@@ -258,9 +243,13 @@ class QCSynthesizer:
                circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min, cost_typ)
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
+           h = param_t.hamming_cost()
            if c < cost: 
                del circuit, param
-               cost, circuit, param, targ, typ = c, circuit_t, param_t, t, typ_t
+               cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+           elif c == cost and h < hamm: 
+               del circuit, param
+               cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
            else:
                del circuit_t, param_t
        return circuit, param, targ, typ
@@ -288,6 +277,8 @@ class QCSynthesizer:
            self.dynamic_proto(self.BFS, control_min, direction, cost_typ)
        elif string == 'Dym':
            self.dynamic_proto(self.Dym, control_min, direction, cost_typ)
+       elif string == 'DFS':
+           self.dynamic_proto(self.DFS, control_min, direction, cost_typ)
            
 
 ###################
@@ -304,9 +295,9 @@ class QCSynthesizer:
 
    def DFS_Algorithm(self, permute=True, control_min=True, direction='bi', cost_typ='length'):
        if permute: 
-           self.permuting('given_order_alg', range(self.length), control_min, direction, cost_typ)
+           self.permuting('DFS', [], control_min, direction, cost_typ)
        else:
-           self.given_order_alg(range(self.length), control_min, direction, cost_typ)
+           self.dynamic_proto(self.DFS, control_min, direction, cost_typ)
 
 
    def BFS_Algorithm(self, permute=True, control_min=True, direction='bi', cost_typ='length'):
