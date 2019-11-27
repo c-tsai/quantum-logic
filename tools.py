@@ -119,7 +119,6 @@ class Control_lines_generator:
         
     def able_clines(self, bit1, controled):
         aim = (bit1|controled)- controled
-        print(aim)
         result, point= Control_lines(self.bit_len), 1
         for i in range(self.bit_len):
             if not point in self.unable[1] and (point&aim)!=0: 
