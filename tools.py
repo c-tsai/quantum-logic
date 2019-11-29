@@ -30,10 +30,13 @@ def Hamming_Dist(bit1, bit2, bit_len):
 
 
 class Table:
-    def __init__(self, length):
+    def __init__(self, length, array = 0):
         self.dict = {}
         self.length = length
-        
+        if not isinstance(array, int):
+            for i in range(array.shape[0]):
+                self.dict[i]= int(array[i])
+            
         
     def __getitem__(self, key):
         if key in self.dict: return self.dict[key]
@@ -88,10 +91,7 @@ class Control_lines:
     def __contains__(self, key): 
         return key in self.lib[Hamming_Dist(key,0,self.bit_len)-1]
     
-    def __len__(self):
-        result = 0
-        for s in self.lib: result += len(s)
-        return result
+    def __len__(self): return len(self.lib)
     def __iter__(self):
         self.iterator, self.iterid= iter(self.lib[0]), 0
         return self
