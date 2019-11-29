@@ -1,0 +1,2 @@
+q_cost,gate_len,NCV-111,NCV-012,NCV-155
+add6.pla
