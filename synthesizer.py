@@ -48,7 +48,7 @@ class QCSynthesizer:
               temp_c = copy.deepcopy(result)
               temp_c.add(QCircuit([q]), 'f')
               temp.add(temp_c,typ)
-              t_h, t_control = temp.hamming_cost(), q.control_num()
+              t_h, t_control = temp.hamming_cost().summ(), q.control_num()
               t_q = temp_c.cost(t_h, cost_typ)
               #print(t_q)
               #print('---------')
@@ -243,7 +243,7 @@ class QCSynthesizer:
                circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min, cost_typ)
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
-           h = param_t.hamming_cost()
+           h = param_t.hamming_cost().summ()
            if c < cost: 
                del circuit, param
                cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
@@ -258,14 +258,14 @@ class QCSynthesizer:
    def permuting(self, alg, para, control_min, direction, cost_typ):
        q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
        q.algorithm_selector(alg, para, control_min, direction, cost_typ)
-       h_cost, qc= q.hamming_cost(), q.output_circuit()
+       h_cost, qc= q.hamming_cost().summ(), q.output_circuit()
        self.output_b, self.output_f, cost = q.output_b, q.output_f, qc.cost(h_cost, cost_typ)
        for i in range( self.bit_len-1):
            for j in range(i+1, self.bit_len):
                q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
                q.add(QCircuit([SwapGate(2**i, 2**j, self.bit_len)]), 'f')
                q.algorithm_selector(alg, para, control_min, direction, cost_typ)
-               h_cost = q.hamming_cost()
+               h_cost = q.hamming_cost().summ()
                qc = q.output_circuit()
                if qc.cost(h_cost, cost_typ) < cost:
                    self.output_b, self.output_f, cost= q.output_b, q.output_f, qc.cost(h_cost)
