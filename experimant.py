@@ -7,6 +7,7 @@ Created on Thu Aug 22 15:15:31 2019
 import numpy as np
 import pandas as pd
 from synthesizer import QCSynthesizer
+from tools import Table
 bit_len=3
 
 df = pd.read_csv('exhaustive_partial.csv')
@@ -20,8 +21,9 @@ for idx, row in df.iterrows():
     for i in row:
         if i == -1: x -= 1 
     print(idx)
-    q= QCSynthesizer(np.array(row).astype(int), bit_len)
-    q.Dym_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
+    table = Table(2**bit_len, row)
+    q= QCSynthesizer(table, bit_len)
+    q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
     qc= q.output_circuit()
     resultG[len(qc), x] = result111[len(qc), x] + 1
     #print(qc.cost(0, 'NCV-155'))
