@@ -20,7 +20,7 @@ for idx, row in df.iterrows():
     x=8
     for i in row:
         if i == -1: x -= 1 
-    print(idx)
+    print(idx, row)
     table = Table(2**bit_len, row)
     q= QCSynthesizer(table, bit_len)
     q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
