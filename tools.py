@@ -35,9 +35,9 @@ class Table:
         self.length = length
         if not isinstance(array, int):
             for i in range(array.shape[0]):
-                self.dict[i]= int(array[i])
+                if array[i] != -1: self.dict[i]= int(array[i])
             
-        
+    def __str__(self): return str(self.dict)    
     def __getitem__(self, key):
         if key in self.dict: return self.dict[key]
         elif key < self.length: return -1
