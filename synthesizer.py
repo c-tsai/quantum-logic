@@ -39,6 +39,7 @@ class QCSynthesizer:
        self.output_b = QCircuit([])
        self.table_b = np.array([-1 for i in range(self.length)])
        self.total_hamming= 0
+       self.order = []
        if isinstance(table_b, int): self.update_table_b()
        else: self.table_b= table_b.copy()
        self.generate_all_c_line()
@@ -188,6 +189,9 @@ class QCSynthesizer:
        result.add(self.output_f.reverse(),'f')
        return result
    
+   def order_difference(self, synther):
+       return np.linalg.norm(np.array(self.order)-np.array(synther.order), 0)
+   
 
 #####################################
 # The Algorithm's Helper Function  ##
@@ -207,6 +211,7 @@ class QCSynthesizer:
            #print('           ')
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            self.all_c_line.remove(targ)
+       self.order = order
        #for targ in order:
        #    if not (self.table_f[targ]==targ or self.table_f[targ]==-1):
        #        raise ValueError(targ, self.table_f[targ])
@@ -219,7 +224,7 @@ class QCSynthesizer:
            circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min, cost_typ)
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
        self.all_c_line.remove(0)
-       candi, done = set([]), set([0])
+       candi, done, self.order= set([]), set([0]), [0]
        for i in range(self.bit_len):
            candi.add(2**i)
        while candi:
@@ -228,6 +233,7 @@ class QCSynthesizer:
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            self.all_c_line.remove(targ)
            new = set([])
+           self.order = self.order + [targ]
            for t in done: new.add(t|targ)
            done.add(targ)
            candi = candi.union(new)-done
@@ -281,6 +287,7 @@ class QCSynthesizer:
                h_cost = q.hamming_cost()
                qc = q.output_circuit()
                if qc.cost(h_cost, cost_typ) < cost:
+                   self.order = q.order
                    self.output_b, self.output_f, cost= q.output_b, q.output_f, qc.cost(h_cost)
       
    def algorithm_selector(self, string, para, control_min, direction, cost_typ):
