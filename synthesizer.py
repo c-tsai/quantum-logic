@@ -32,7 +32,7 @@ class QCSynthesizer:
        b, result, param= i_bit, QCircuit([]), self
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
-          print(b, f_bit, typ, self.table_f, self.table_b)
+          #print(b, f_bit, typ, self.table_f, self.table_b)
           diff, point, candi= b^f_bit, 1, set([])
           for i in range(self.bit_len):
               if not diff&point == 0:
@@ -45,7 +45,7 @@ class QCSynthesizer:
 
           result_gate, cost_q, cost_h, control_num= 0, 100000000, 10000000, 10000000
           for q in candi:
-              print(q, '\n')
+              #print(q, '\n')
               temp = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
               temp_c = copy.deepcopy(result)
               temp_c.add(QCircuit([q]), 'f')
@@ -143,13 +143,20 @@ class QCSynthesizer:
 
 
    def add(self, circuit, typ, table_b=0, table_f=0, table_h=0):
+       print(self.table_f, '\n', circuit, typ)
        if not isinstance(table_f, int): self.table_f= table_f.copy()
        elif typ == 'f':
+           temp = Table(self.length)
            for i in self.table_f:
-               self.table_f[i]=circuit.inf(self.table_f[i])
+               temp[i]=circuit.inf(self.table_f[i])
+               print(i, self.table_f[i], temp)
+           self.table_f = temp
        else:
+           temp = Table(self.length)
            for i in self.table_b:
-               self.table_b[i]=circuit.inf(self.table_b[i]) 
+               temp[i]=circuit.inf(self.table_b[i])
+               print(i, self.table_b[i], temp)
+           self.table_b = temp 
            self.update_table_f()
        if typ == 'f':
            self.output_f.add(circuit, typ)
@@ -160,6 +167,7 @@ class QCSynthesizer:
        else: self.update_total_hamming()
        if not isinstance(table_b, int): self.table_b= table_b.copy()
        else:  self.update_table_b()
+       print(self.table_f, '------------------')
 
    def hamming_cost(self):
        if self.total_hamming == 0:
