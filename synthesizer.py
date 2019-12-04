@@ -272,6 +272,35 @@ class QCSynthesizer:
            else:
                del circuit_t, param_t
        return circuit, param, targ, typ
+   
+   
+   def Dym_DFS(self, candi, control_min, direction, cost_typ):
+       cost_q, cost_h, circuit, param, targ, typ= 10000000, 10000000, 0, 0, -1, 'f'
+       control_num = 0
+       for t in candi:
+           circuit_t, param_t, typ_t = 0, 0, 0
+           control_num_t = Hamming_Dist(t,0,self.bit_len)
+           if control_num_t < control_num: continue
+           if direction == 'bi':
+               circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
+           else:
+               circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min, cost_typ)
+               typ_t = 'f'
+           c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
+           h = param_t.hamming_cost()
+           if control_num_t > control_num:
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               control_num = control_num_t
+           if c < cost_q: 
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+           elif c==cost_q and h < cost_h: 
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+           else:
+               del circuit_t, param_t
+       return circuit, param, targ, typ
        
                
    def permuting(self, alg, para, control_min, direction, cost_typ):
@@ -297,6 +326,8 @@ class QCSynthesizer:
            self.dynamic_proto(self.BFS, control_min, direction, cost_typ)
        elif string == 'Dym':
            self.dynamic_proto(self.Dym, control_min, direction, cost_typ)
+       elif string == 'Dym_DFS':
+           self.dynamic_proto(self.Dym_DFS, control_min, direction, cost_typ)
            
 
 ###################
