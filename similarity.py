@@ -10,7 +10,7 @@ from synthesizer import QCSynthesizer
 bit_len=3
 
 df = pd.read_csv('exhaustive_partial.csv')
-control_min, cost_typ= False, 'NCV-111'
+control_min, cost_typ= True, 'NCV-012'
 BFS_si, DFS_si= 0, 0
 
 for idx, row in df.iterrows():
@@ -28,3 +28,4 @@ for idx, row in df.iterrows():
 
 print('TOL DFS difference to Dym: ', DFS_si)
 print('TOL BFS difference to Dym: ', BFS_si)
+print('for NCV-012 cost control_min=True')
