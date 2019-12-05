@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
+from Traverse_Map import Traverse_Map
 
 
 
@@ -224,19 +225,16 @@ class QCSynthesizer:
            circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min, cost_typ)
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
        self.all_c_line.remove(0)
-       candi, done, self.order= set([]), set([0]), [0]
-       for i in range(self.bit_len):
-           candi.add(2**i)
-       while candi:
-           circuit, param, targ, typ = pick_func(candi, control_min, direction, cost_typ)
+       t_map = Traverse_Map(self.bit_len)
+       t_map.traverse(0)
+       self.order= [0]
+       while t_map.available:
+           circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
            #print(candi)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            self.all_c_line.remove(targ)
-           new = set([])
+           t_map.traverse(targ)
            self.order = self.order + [targ]
-           for t in done: new.add(t|targ)
-           done.add(targ)
-           candi = candi.union(new)-done
            
            
    def BFS(self, candi, control_min, direction, cost_typ):
@@ -292,7 +290,7 @@ class QCSynthesizer:
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
                control_num = control_num_t
-           if c < cost_q: 
+           elif c < cost_q: 
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
            elif c==cost_q and h < cost_h: 
@@ -361,6 +359,12 @@ class QCSynthesizer:
            self.permuting('Dym', [], control_min, direction, cost_typ)
        else:
            self.dynamic_proto(self.Dym, control_min, direction, cost_typ)
+           
+   def Dym_DFS_Algorithm(self, permute=True, control_min=True, direction='bi', cost_typ='length'):
+       if permute: 
+           self.permuting('Dym_DFS', [], control_min, direction, cost_typ)
+       else:
+           self.dynamic_proto(self.Dym_DFS, control_min, direction, cost_typ)
        
            
   
