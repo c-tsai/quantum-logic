@@ -1,31 +1,47 @@
 TOL DFS difference to Dym:  6238128.0
 TOL BFS difference to Dym:  6645461.0
+amount of Dym became DFS:  901190
+amount of Dym became BFS:  540539
 for length cost control_min=False
 
 TOL DFS difference to Dym:  6068095.0
 TOL BFS difference to Dym:  6502198.0
+amount of Dym became DFS:  926682
+amount of Dym became BFS:  515047
 for length cost control_min=True
 
 TOL DFS difference to Dym:  6502524.0
 TOL BFS difference to Dym:  6433390.0
-for NCV-111 control_min=False
-
-amount of Dym became DFS:  0
-amount of Dym became BFS:  1441729
+amount of Dym became DFS:  610389
+amount of Dym became BFS:  831340
 for NCV-111 cost control_min=False
 
 TOL DFS difference to Dym:  6507980.0
 TOL BFS difference to Dym:  6444884.0
-for NCV-111 control_min=True
+amount of Dym became DFS:  620086
+amount of Dym became BFS:  821643
+for NCV-111 cost control_min=True
 
 TOL DFS difference to Dym:  6502524.0
 TOL BFS difference to Dym:  6433390.0
-amount of Dym became DFS:  0
-amount of Dym became BFS:  1441729
+amount of Dym became DFS:  610389
+amount of Dym became BFS:  831340
 for NCV-012 cost control_min=False
 
+TOL DFS difference to Dym:  6510848.0
+TOL BFS difference to Dym:  6439520.0
+amount of Dym became DFS:  611512
+amount of Dym became BFS:  830217
+for NCV-012 cost control_min=True
+
 TOL DFS difference to Dym:  6502524.0
 TOL BFS difference to Dym:  6433390.0
-amount of Dym became DFS:  0
-amount of Dym became BFS:  1441729
+amount of Dym became DFS:  610389
+amount of Dym became BFS:  831340
 for NCV-155 cost control_min=False
+
+TOL DFS difference to Dym:  6510848.0
+TOL BFS difference to Dym:  6439520.0
+amount of Dym became DFS:  611512
+amount of Dym became BFS:  830217
+for NCV-155 cost control_min=True
