@@ -4,6 +4,7 @@ Created on Tue Nov 19 15:35:08 2019
 
 @author: v-catsai
 """
+
 def pla_reader(file):
     f = open(file, 'r')
     bit_len, i, t= 0, 0, 0
