@@ -88,6 +88,10 @@ class QCircuit:
         for q in self.list:
             b = q.inf(b)
         return b
+    def __iter__(self):
+        self.iterator = iter(self.list)
+        return self
+    def __next__(self):return next(self.iterator)
     def __str__(self):
         string = ''
         for q in self.list:

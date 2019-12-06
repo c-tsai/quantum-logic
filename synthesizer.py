@@ -1,6 +1,7 @@
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
-from tools import Table, Hamming_Dist
+from tools import Table, Hamming_Dist, Control_lines_generator
+from Traverse_Map import Traverse_Map
 
 
 
@@ -32,7 +33,7 @@ class QCSynthesizer:
        b, result, param= i_bit, QCircuit([]), self
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
-          print(b, f_bit, typ, self.table_f, self.table_b)
+          #print(b, f_bit, typ, self.table_f, self.table_b)
           diff, point, candi= b^f_bit, 1, set([])
           for i in range(self.bit_len):
               if not diff&point == 0:
@@ -45,7 +46,7 @@ class QCSynthesizer:
 
           result_gate, cost_q, cost_h, control_num= 0, 100000000, 10000000, 10000000
           for q in candi:
-              print(q, '\n')
+              #print(q, '\n')
               temp = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
               temp_c = copy.deepcopy(result)
               temp_c.add(QCircuit([q]), 'f')
@@ -69,7 +70,7 @@ class QCSynthesizer:
                   param= temp
               else: del temp_c
               del temp
-          #print(param.table_f, b, f_bit)
+          #print(param.table_f, b, f_bit, typ)
           #print('           ')
           del candi, result
           result = result_gate
@@ -81,6 +82,7 @@ class QCSynthesizer:
        if i_bit==-1 or f_bit==-1:   return result, self
        diff_1, diff_0, point= (i_bit^f_bit)&i_bit, (i_bit^f_bit)&f_bit, 1
        param = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
+       #print(i_bit, f_bit, typ, self.table_f)
        for i in range(self.bit_len):
            if not diff_0&point == 0:
                result.add(QCircuit([TofoliGate(i_bit, point, self.bit_len)]), 'f')
@@ -95,6 +97,7 @@ class QCSynthesizer:
 
 
    def select_b_or_f(self, targ, control_min, cost_typ):
+       #print(self.table_f)
        if self.table_b[targ]== -1:
            c, p =self.gate_syns(self.table_f[targ], targ, 'f', control_min, cost_typ)
            return c, p , 'f'
@@ -103,24 +106,24 @@ class QCSynthesizer:
            return c, p, 'b'
        circuit_f, param_f= self.gate_syns(self.table_f[targ], 
                                           targ, 'f', control_min, cost_typ)
+       #print('f', self.table_f)
        circuit_b, param_b= self.gate_syns(targ, self.table_b[targ], 
                                           'b', control_min, cost_typ)
+       #print('b', self.table_f)
        #print(circuit_b)
        #print('    ')
        #print(circuit_f)
        if circuit_b.cost(param_b.hamming_cost(), cost_typ) < circuit_f.cost(param_f.hamming_cost(), cost_typ) :
-           print('b')
+           #print('b')
            return circuit_b, param_b, 'b'
        else:
-           print('f')
+           #print('f')
            return circuit_f, param_f, 'f'
        
 
         
    def generate_all_c_line(self):
-       self.all_c_line= set([])
-       for i in range(self.length):
-           self.all_c_line.add(i)
+       self.all_c_line= Control_lines_generator(self.bit_len)
    def update_total_hamming(self):
        self.total_hamming= Table(self.length)
        for i in self.table_f:
@@ -143,13 +146,23 @@ class QCSynthesizer:
 
 
    def add(self, circuit, typ, table_b=0, table_f=0, table_h=0):
+       #print(self.table_f, '\n', circuit, typ)
        if not isinstance(table_f, int): self.table_f= table_f.copy()
+       if not isinstance(table_b, int): self.table_b= table_b.copy()
        elif typ == 'f':
+           temp = Table(self.length)
            for i in self.table_f:
-               self.table_f[i]=circuit.inf(self.table_f[i])
+               temp[i]=circuit.inf(self.table_f[i])
+               #print(i, self.table_f[i], temp)
+           self.table_f = temp
        else:
-           for i in self.table_b:
-               self.table_b[i]=circuit.inf(self.table_b[i]) 
+           for q in circuit.reverse():
+               #print(q)
+               temp = Table(self.length)
+               for i in self.table_b:
+                   temp[i]=q.inf(self.table_b[i])
+               #print(i, self.table_b[i], temp)
+               self.table_b = temp
            self.update_table_f()
        if typ == 'f':
            self.output_f.add(circuit, typ)
@@ -160,6 +173,7 @@ class QCSynthesizer:
        else: self.update_total_hamming()
        if not isinstance(table_b, int): self.table_b= table_b.copy()
        else:  self.update_table_b()
+       #print(self.table_f, '------------------')
 
    def hamming_cost(self):
        if self.total_hamming == 0:
@@ -201,20 +215,19 @@ class QCSynthesizer:
        else:
            circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min, cost_typ)
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
+       #print(0, self.table_b)
        self.all_c_line.remove(0)
-       candi, done = set([]), set([0])
-       for i in range(self.bit_len):
-           candi.add(2**i)
-       while candi:
-           circuit, param, targ, typ = pick_func(candi, control_min, direction, cost_typ)
+       t_map = Traverse_Map(self.bit_len)
+       t_map.traverse(0)
+       self.order= [0]
+       while t_map.available:
+           circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
            #print(candi)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
+           #print(targ, self.table_b)
            self.all_c_line.remove(targ)
-           new = set([])
-           for t in done: 
-               new.add(t|targ)
-           done.add(targ)
-           candi = candi.union(new)-done
+           t_map.traverse(targ)
+           self.order = self.order + [targ]
            
            
    def BFS(self, candi, control_min, direction, cost_typ):
@@ -260,6 +273,35 @@ class QCSynthesizer:
            else:
                del circuit_t, param_t
        return circuit, param, targ, typ
+   
+    
+   def Dym_DFS(self, candi, control_min, direction, cost_typ):
+       cost_q, cost_h, circuit, param, targ, typ= 10000000, 10000000, 0, 0, -1, 'f'
+       control_num = 0
+       for t in candi:
+           circuit_t, param_t, typ_t = 0, 0, 0
+           control_num_t = Hamming_Dist(t,0,self.bit_len)
+           if control_num_t < control_num: continue
+           if direction == 'bi':
+               circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
+           else:
+               circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min, cost_typ)
+               typ_t = 'f'
+           c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
+           h = param_t.hamming_cost()
+           if control_num_t > control_num:
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               control_num = control_num_t
+           elif c < cost_q: 
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+           elif c==cost_q and h < cost_h: 
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+           else:
+               del circuit_t, param_t
+       return circuit, param, targ, typ
        
                
    def permuting(self, alg, para, control_min, direction, cost_typ):
@@ -286,6 +328,8 @@ class QCSynthesizer:
            self.dynamic_proto(self.Dym, control_min, direction, cost_typ)
        elif string == 'DFS':
            self.dynamic_proto(self.DFS, control_min, direction, cost_typ)
+       elif string == 'Dym_DFS':
+           self.dynamic_proto(self.Dym_DFS, control_min, direction, cost_typ)
            
 
 ###################
@@ -319,7 +363,13 @@ class QCSynthesizer:
            self.permuting('Dym', [], control_min, direction, cost_typ)
        else:
            self.dynamic_proto(self.Dym, control_min, direction, cost_typ)
-       
+   
+    
+   def Dym_DFS_Algorithm(self, permute=True, control_min=True, direction='bi', cost_typ='length'):
+       if permute: 
+           self.permuting('Dym_DFS', [], control_min, direction, cost_typ)
+       else:
+           self.dynamic_proto(self.Dym_DFS, control_min, direction, cost_typ)
            
   
 '''
