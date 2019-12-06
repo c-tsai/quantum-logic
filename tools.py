@@ -73,16 +73,25 @@ class Table:
     
 class Control_lines:
     def __init__(self, bit_len):
-        self.lib= [set([]) for i in range(bit_len)]
+        self.lib= [set([]) for i in range(bit_len+1)]
         self.bit_len= bit_len
     def add(self, line, b_num=0):
         if b_num == 0:
-            self.lib[Hamming_Dist(line,0,self.bit_len)-1].add(line)
-        else: self.lib[b_num-1].add(line)
+            self.lib[Hamming_Dist(line,0,self.bit_len)].add(line)
+        else: self.lib[b_num].add(line)
+    def __str__(self):
+        string = '['
+        for s in self.lib:
+            string = string + '('
+            for i in s:
+                string = string + str(i) + ','
+            string = string + ')'+ '\n'
+        string = string + ']'
+        return string
     def __getitem__(self, key):
-        if key < 1 or key > self.bit_len:
+        if key < 0 or key > self.bit_len:
             raise IndexError(str(key)+" is not in: 1~"+str(self.bit_len))
-        return self.lib[key-1] 
+        return self.lib[key] 
     def __setitem__(self, key, value):
         raise ValueError("The function shouldn't be used")
     def __del__(self):
@@ -90,7 +99,7 @@ class Control_lines:
         del self.bit_len
         
     def __contains__(self, key): 
-        return key in self.lib[Hamming_Dist(key,0,self.bit_len)-1]
+        return key in self.lib[Hamming_Dist(key,0,self.bit_len)]
     
     def __len__(self): return len(self.lib)
     def __iter__(self):
@@ -107,7 +116,7 @@ class Control_lines:
         return res
     def union(self, new):
         for i in range(self.bit_len):
-            self.lib[i]= self.lib[i].union(new[i+1])
+            self.lib[i]= self.lib[i].union(new[i])
         
 
 class Control_lines_generator:
@@ -122,12 +131,14 @@ class Control_lines_generator:
         aim = (bit1|controled)- controled
         result, point= Control_lines(self.bit_len), 1
         for i in range(self.bit_len):
-            if not point in self.unable[1] and (point&aim)!=0: 
-                result.add(point, 1)
+            if not point in self.unable[1] and (point&aim)!=0:
                 new = Control_lines(self.bit_len)
                 for i in result:new.add(i|point)
                 result.union(new)
+                result.add(point, 1)
+                #print('new', new)
             point *= 2
+            #print(result)
         return result
         
             
