@@ -1,6 +1,6 @@
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
-from tools import Table, Hamming_Dist
+from tools import Table, Hamming_Dist, Control_lines_generator
 from Traverse_Map import Traverse_Map
 
 
@@ -123,9 +123,7 @@ class QCSynthesizer:
 
         
    def generate_all_c_line(self):
-       self.all_c_line= set([])
-       for i in range(self.length):
-           self.all_c_line.add(i)
+       self.all_c_line= Control_lines_generator(self.bit_len)
    def update_total_hamming(self):
        self.total_hamming= Table(self.length)
        for i in self.table_f:
