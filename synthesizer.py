@@ -1,6 +1,7 @@
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
-from tools import Table, Hamming_Dist, Control_lines_generator
+from table import Table, Hamming_Dist
+from Control_line  import Control_lines_generator
 from Traverse_Map import Traverse_Map
 
 
