@@ -7,7 +7,7 @@ Created on Thu Aug 22 15:15:31 2019
 import numpy as np
 import pandas as pd
 from synthesizer import QCSynthesizer
-from tools import Table
+from table import Table
 bit_len=3
 
 df = pd.read_csv('exhaustive_partial.csv')
