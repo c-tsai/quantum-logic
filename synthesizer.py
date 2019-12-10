@@ -34,13 +34,14 @@ class QCSynthesizer:
        b, result, param= i_bit, QCircuit([]), self
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
-          #print(b, f_bit, typ, self.table_f, self.table_b)
           diff, point, candi= b^f_bit, 1, set([])
+          #print(self.table_f, b, f_bit)
           for i in range(self.bit_len):
               if not diff&point == 0:
-                  for c in self.all_c_line:
-                      if c&point == 0 and c&b==c:
-                          candi.add(TofoliGate(c,point,self.bit_len))
+                  #print('|', point)
+                  for c in self.all_c_line.able_clines(b, point):
+                      candi.add(TofoliGate(c,point,self.bit_len))
+                      #print(c)
                           #if not control_min: break
                   #if not len(candi)==0 and not control_min: break
               point *=2
@@ -223,9 +224,9 @@ class QCSynthesizer:
        self.order= [0]
        while t_map.available:
            circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
-           #print(candi)
+           #print(circuit)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
-           #print(targ, self.table_b)
+           print(targ, self.table_b)
            self.all_c_line.remove(targ)
            t_map.traverse(targ)
            self.order = self.order + [targ]
