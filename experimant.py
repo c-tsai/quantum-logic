@@ -20,10 +20,10 @@ for idx, row in df.iterrows():
     x=8
     for i in row:
         if i == -1: x -= 1 
-    print(idx, row)
+    print(idx)
     table = Table(2**bit_len, row)
     q= QCSynthesizer(table, bit_len)
-    q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
+    q.Dym_DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
     qc= q.output_circuit()
     resultG[len(qc), x] = result111[len(qc), x] + 1
     #print(qc.cost(0, 'NCV-155'))
