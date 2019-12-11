@@ -51,7 +51,7 @@ class Table:
     def __del__(self):
         del self.dict
         del self.length
-    def __len__(self): return self.length
+    def __len__(self): return len(self.dict)
     def __iter__(self):
         self.iterator= iter(self.dict)
         return self
