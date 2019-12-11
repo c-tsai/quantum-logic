@@ -6,7 +6,6 @@ from Traverse_Map import Traverse_Map
 
 
 
-
 class QCSynthesizer:
 
    def __init__(self, table, bit_len, table_b=0):
@@ -35,13 +34,14 @@ class QCSynthesizer:
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
           diff, point, candi= b^f_bit, 1, set([])
-          #print(self.table_f, b, f_bit)
+          #print(self.table_b, b, f_bit, typ)
           for i in range(self.bit_len):
               if not diff&point == 0:
                   #print('|', point)
+                  #print(point, diff, self.all_c_line.able_clines(b, point))
                   for c in self.all_c_line.able_clines(b, point):
                       candi.add(TofoliGate(c,point,self.bit_len))
-                      #print(c)
+                      #print(c, point)
                           #if not control_min: break
                   #if not len(candi)==0 and not control_min: break
               point *=2
@@ -53,7 +53,7 @@ class QCSynthesizer:
               temp_c = copy.deepcopy(result)
               temp_c.add(QCircuit([q]), 'f')
               temp.add(temp_c,typ)
-              t_h, t_control = temp.hamming_cost().summ(), q.control_num()
+              t_h, t_control = temp.hamming_cost(), q.control_num()
               t_q = temp_c.cost(t_h, cost_typ)
               #print(t_q)
               #print('---------')
@@ -99,7 +99,7 @@ class QCSynthesizer:
 
 
    def select_b_or_f(self, targ, control_min, cost_typ):
-       #print(self.table_f)
+       #print(self.table_f, self.table_b, targ)
        if self.table_b[targ]== -1:
            c, p =self.gate_syns(self.table_f[targ], targ, 'f', control_min, cost_typ)
            return c, p , 'f'
@@ -180,7 +180,7 @@ class QCSynthesizer:
    def hamming_cost(self):
        if self.total_hamming == 0:
           self.update_total_hamming()
-       return self.total_hamming
+       return self.total_hamming.summ()
    
    def output_circuit(self):
        result = self.output_b.reverse()
@@ -222,14 +222,23 @@ class QCSynthesizer:
        t_map = Traverse_Map(self.bit_len)
        t_map.traverse(0)
        self.order= [0]
-       while t_map.available:
+       #print(t_map.available)
+       conti = True
+       while t_map.available and conti:
            circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
            #print(circuit)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
-           print(targ, self.table_b)
+           #print(targ, self.table_b)
            self.all_c_line.remove(targ)
            t_map.traverse(targ)
            self.order = self.order + [targ]
+           conti = False
+           for i in self.table_f:
+               if self.table_f[i]!= i:
+                   conti = True
+                   break
+           #print(t_map.available)
+       #print(self.order)
            
            
    def BFS(self, candi, control_min, direction, cost_typ):
@@ -265,7 +274,7 @@ class QCSynthesizer:
                circuit_t, param_t= self.gate_syns(self.table_f[t], t, 'f', control_min, cost_typ)
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
-           h = param_t.hamming_cost().summ()
+           h = param_t.hamming_cost()
            if c < cost: 
                del circuit, param
                cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
@@ -309,14 +318,14 @@ class QCSynthesizer:
    def permuting(self, alg, para, control_min, direction, cost_typ):
        q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
        q.algorithm_selector(alg, para, control_min, direction, cost_typ)
-       h_cost, qc= q.hamming_cost().summ(), q.output_circuit()
+       h_cost, qc= q.hamming_cost(), q.output_circuit()
        self.output_b, self.output_f, cost = q.output_b, q.output_f, qc.cost(h_cost, cost_typ)
        for i in range( self.bit_len-1):
            for j in range(i+1, self.bit_len):
                q= QCSynthesizer(self.table_f, self.bit_len, self.table_b)
                q.add(QCircuit([SwapGate(2**i, 2**j, self.bit_len)]), 'f')
                q.algorithm_selector(alg, para, control_min, direction, cost_typ)
-               h_cost = q.hamming_cost().summ()
+               h_cost = q.hamming_cost()
                qc = q.output_circuit()
                if qc.cost(h_cost, cost_typ) < cost:
                    self.output_b, self.output_f, cost= q.output_b, q.output_f, qc.cost(h_cost)
