@@ -5,6 +5,7 @@ Created on Tue Dec 10 12:04:32 2019
 @author: v-catsai
 """
 from table import Hamming_Dist
+import copy as c
 
 class Control_lines:
     def __init__(self, bit_len):
@@ -25,7 +26,7 @@ class Control_lines:
             string = string + '('
             for i in s:
                 string = string + str(i) + ','
-            string = string + ')'+ '\n'
+            string = string + ')'+ ';'
         string = string + ']'
         return string
     def __getitem__(self, key):
@@ -62,6 +63,10 @@ class Control_lines:
     def union(self, new):
         for i in range(self.bit_len):
             self.lib[i]= self.lib[i].union(new[i])
+    def copy(self):
+        new = Control_lines(self.bit_len)
+        new.lib= c.deepcopy(self.lib)
+        return new
             
 
 
@@ -78,11 +83,6 @@ class Control_lib(Control_lines):
         if b_num == -1:
             self.lib[Hamming_Dist(line,0,self.bit_len)].pop(line, None)
         else: self.lib[b_num].discard(line, None)
-    def __del__(self):
-        for d in self.lib:
-            keys = [key for key in d]
-            for key in keys: del d[key]
-        del self.lib
     def get(self, targ, b_num=-1):
         if b_num == -1:
             if self.iterid != -1:
@@ -91,6 +91,15 @@ class Control_lib(Control_lines):
                     return self.lib[Hamming_Dist(targ,0,self.bit_len)][targ]
             return self.lib[Hamming_Dist(targ,0,self.bit_len)][targ]
         return self.lib[b_num][targ]
+    def __str__(self):
+        string = '['
+        for s in self.lib:
+            string = string + '{'
+            for i in s:
+                string = string+ str(i)+ ':'+ str(s[i]) + ','
+            string = string + '}'+ '\n'
+        string = string + ']'
+        return string
         
         
 
@@ -114,6 +123,7 @@ class Control_lines_generator:
         
     def able_clines(self, bit1, controled):
         aim, point = (bit1|controled)- controled, 1
+        #print(aim, self.lib_fin)
         if aim in self.lib_fin: return self.lib_fin.get(aim)
         
         pre_fin, pre_all = Control_lines(self.bit_len), Control_lines(self.bit_len)
@@ -124,7 +134,8 @@ class Control_lines_generator:
             d= key^aim
             if aim|key == aim and Hamming_Dist(d,0,self.bit_len)< dist:
                 del pre_fin, pre_all
-                pre_fin, pre_all, diff= self.lib_fin.get(key), self.lib_all.get(key, self.lib_fin.iterid), d
+                pre_fin, diff= self.lib_fin.get(key).copy(), d 
+                pre_all = self.lib_all.get(key, self.lib_fin.iterid).copy()
                 dist = Hamming_Dist(d,0, self.bit_len)   
         for i in range(self.bit_len):
             if (point&diff)!=0:
@@ -140,7 +151,8 @@ class Control_lines_generator:
             point *= 2
             #print(result) 
         self.lib_all.add(aim, pre_all)
-        self.lib_fin.add(aim, pre_fin)      
+        self.lib_fin.add(aim, pre_fin)
+        #print(self.lib_fin)
         return pre_fin
         
             
