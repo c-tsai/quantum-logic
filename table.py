@@ -33,6 +33,7 @@ def Hamming_Dist(bit1, bit2, bit_len):
 class Table:
     def __init__(self, length, array = 0):
         self.dict = {}
+        self.done = set([])
         self.length = length
         if not isinstance(array, int):
             for i in range(array.shape[0]):
@@ -41,6 +42,7 @@ class Table:
     def __str__(self): return str(self.dict)    
     def __getitem__(self, key):
         if key in self.dict: return self.dict[key]
+        elif key in self.done: return key 
         elif key < self.length: return -1
         else: 
             raise ValueError('"'+str(key)+'" out of range (>'+str(self.length)+')')
@@ -50,6 +52,7 @@ class Table:
         
     def __del__(self):
         del self.dict
+        del self.done
         del self.length
     def __len__(self): return len(self.dict)
     def __iter__(self):
@@ -62,12 +65,17 @@ class Table:
     def copy(self): 
         t = Table(self.length)
         t.dict= self.dict.copy()
+        t.done = self.done.copy()
         return t
+    
+    def traversed_pop(self, key):
+        self.dict.pop(key, None)
+        self.done.add(key)
     
     def summ(self):
         result = 0
-        for i in self:
-            result += self.__getitem__(i)
+        for i in self.dict:
+            result += self.dict[i]
         return result
     
     

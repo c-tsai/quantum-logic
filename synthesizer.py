@@ -140,6 +140,11 @@ class QCSynthesizer:
        self.table_f = Table(self.length)
        for i in self.table_b:
            self.table_f[self.table_b[i]]= i
+   def traverse(self, targ):
+       self.all_c_line.remove(targ)
+       self.order = self.order + [targ]
+       self.table_b.traversed_pop(targ)
+       self.table_f.traversed_pop(targ)
 
 
 ######################
@@ -228,8 +233,8 @@ class QCSynthesizer:
            circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
            #print(circuit)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
-           #print(targ, self.table_b)
-           self.all_c_line.remove(targ)
+           print(targ)
+           self.traverse(targ)
            t_map.traverse(targ)
            self.order = self.order + [targ]
            conti = False
