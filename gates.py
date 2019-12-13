@@ -126,6 +126,7 @@ class QCircuit:
             return h_cost
         if typ[:3]=='NCV':
             result = 0
+            table = [0,1,1,5,13,29,61,125,253,509,1021]
             n_cost, c_cost, v_cost = int(typ[-3]), int(typ[-2]), int(typ[-1])
             for key in self.dict:
                 if key == '0':
@@ -134,6 +135,9 @@ class QCircuit:
                    result += c_cost*self.dict['1']
                 elif key == '2':
                    result += (2*c_cost + 3*v_cost)*self.dict['2']
+                elif int(key) <= 10:
+                    result += table[int(key)]*self.dict[key]
+                else: result += (1<<int(key))-3
                 #print(result)
             #print("complete")
             return result 
