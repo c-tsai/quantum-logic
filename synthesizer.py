@@ -1,6 +1,6 @@
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
-from table import Table, Hamming_Dist
+from table import Table, Hamming_Dist, Table_h
 from Control_line  import Control_lines_generator
 from Traverse_Map import Traverse_Map
 
@@ -33,48 +33,40 @@ class QCSynthesizer:
        b, result, param= i_bit, QCircuit([]), self
        if i_bit==-1 or f_bit==-1:   return result, param
        while not b == f_bit:
-          diff, point, candi= b^f_bit, 1, set([])
+          diff, point= b^f_bit, 1
+          result_gate, cost_q, cost_h= 0, 100000000, 10000000
           #print(self.table_b, b, f_bit, typ)
           for i in range(self.bit_len):
               if not diff&point == 0:
                   #print('|', point)
                   #print(point, diff, self.all_c_line.able_clines(b, point))
-                  for c in self.all_c_line.able_clines(b, point):
-                      candi.add(TofoliGate(c,point,self.bit_len))
-                      #print(c, point)
+                  lib = self.all_c_line.able_clines(b, point)
+                  for i in range(len(lib)):
+                      if not lib[i]: continue
+                      for c in lib[i]:
+                          q = TofoliGate(c,point,self.bit_len)
+                          temp = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
+                          temp_c = copy.deepcopy(result)
+                          temp_c.add(QCircuit([q]), 'f')
+                          temp.add(temp_c,typ)
+                          t_h = temp.hamming_cost()
+                          t_q = temp_c.cost(t_h, cost_typ)
+                          if t_q < cost_q:
+                              result_gate, cost_q, cost_h = temp_c, t_q, t_h
+                              del param
+                              param= temp
+                          elif t_q==cost_q and t_h < cost_h:
+                              result_gate, cost_q, cost_h = temp_c, t_q, t_h
+                              del param
+                              param= temp
+                          else: del temp_c
+                          del temp
+                      break
+                        #print(c, point)
                           #if not control_min: break
                   #if not len(candi)==0 and not control_min: break
               point *=2
-
-          result_gate, cost_q, cost_h, control_num= 0, 100000000, 10000000, 10000000
-          for q in candi:
-              #print(q, '\n')
-              temp = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
-              temp_c = copy.deepcopy(result)
-              temp_c.add(QCircuit([q]), 'f')
-              temp.add(temp_c,typ)
-              t_h, t_control = temp.hamming_cost(), q.control_num()
-              t_q = temp_c.cost(t_h, cost_typ)
-              #print(t_q)
-              #print('---------')
-              
-              if t_q < cost_q:
-                  result_gate, cost_q, cost_h, control_num = temp_c, t_q, t_h, t_control
-                  del param
-                  param= temp
-              elif t_q==cost_q and t_h < cost_h:
-                  result_gate, cost_q, cost_h, control_num = temp_c, t_q, t_h, t_control
-                  del param
-                  param= temp
-              elif t_q==cost_q and t_h == cost_h and t_control < control_num:
-                  result_gate, cost_q, cost_h, control_num = temp_c, t_q, t_h, t_control
-                  del param
-                  param= temp
-              else: del temp_c
-              del temp
-          #print(param.table_f, b, f_bit, typ)
-          #print('           ')
-          del candi, result
+          del result
           result = result_gate
           b = result.inf(i_bit)
        return result, param
@@ -127,7 +119,7 @@ class QCSynthesizer:
    def generate_all_c_line(self):
        self.all_c_line= Control_lines_generator(self.bit_len)
    def update_total_hamming(self):
-       self.total_hamming= Table(self.length)
+       self.total_hamming= Table_h(self.length)
        for i in self.table_f:
            self.total_hamming[i]= Hamming_Dist(i, self.table_f[i], self.bit_len)
    def update_table_b(self):
@@ -145,6 +137,7 @@ class QCSynthesizer:
        self.order = self.order + [targ]
        self.table_b.traversed_pop(targ)
        self.table_f.traversed_pop(targ)
+       self.total_hamming.traversed_pop(targ)
 
 
 ######################
@@ -192,10 +185,16 @@ class QCSynthesizer:
        result.add(self.output_f.reverse(),'f')
        return result
    
+   def __del__(self):
+       del self.table_b, self.table_f, self.total_hamming
+       del self.output_f, self.output_b
+        
+   
 
 #####################################
 # The Algorithm's Helper Function  ##
 #####################################
+       ### control_min should only be set when the optimized parameter is not length
 
 
    def given_order_alg(self, order, control_min, direction, cost_typ):
@@ -216,6 +215,7 @@ class QCSynthesizer:
        #        raise ValueError(targ, self.table_f[targ])
                
    def dynamic_proto(self, pick_func, control_min, direction, cost_typ):
+       idx  = 0
        circuit, param, typ = 0, 0, 'f'
        if direction=='bi':
            circuit, param, typ = self.select_b_or_f(0, control_min, cost_typ)
@@ -230,10 +230,11 @@ class QCSynthesizer:
        #print(t_map.available)
        conti = True
        while t_map.available and conti:
+           idx += 1
            circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
            #print(circuit)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
-           print(targ)
+           print(idx, targ)
            self.traverse(targ)
            t_map.traverse(targ)
            self.order = self.order + [targ]
@@ -244,6 +245,7 @@ class QCSynthesizer:
                    break
            #print(t_map.available)
        #print(self.order)
+       del t_map
            
            
    def BFS(self, candi, control_min, direction, cost_typ):
@@ -283,9 +285,11 @@ class QCSynthesizer:
            if c < cost: 
                del circuit, param
                cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               if c == 0: break
            elif c == cost and h < hamm: 
                del circuit, param
                cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               if h ==0: break
            else:
                del circuit_t, param_t
        return circuit, param, targ, typ
@@ -315,6 +319,7 @@ class QCSynthesizer:
            elif c==cost_q and h < cost_h: 
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               if h ==0: break
            else:
                del circuit_t, param_t
        return circuit, param, targ, typ

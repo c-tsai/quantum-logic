@@ -7,6 +7,7 @@ Created on Thu Aug 22 15:15:31 2019
 import os 
 from synthesizer import QCSynthesizer
 from table import pla_reader
+import time
 
 folder ='test'
 #f= open('BFS_NCV111_cont_revlib_result.txt', 'w+')
@@ -18,8 +19,10 @@ for spec in os.listdir(folder):
     table, bit_len = pla_reader( os.path.join(folder, spec))
     #print(array.shape, bit_len)
     Q= QCSynthesizer(table, bit_len)
-    Q.DFS_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='length')
+    start = time.time()
+    Q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
     QC= Q.output_circuit()
+    tol = time.time()-start
     #print string
     for i in table:
         if not table[i]== QC.inf(i):
@@ -30,7 +33,7 @@ for spec in os.listdir(folder):
     #f.write(','+str(QC.cost(0,'NCV-111')))
     #f.write(','+str(QC.cost(0,'NCV-012')))
     #f.write(','+str(QC.cost(0,'NCV-155')))
-    print(QC.cost(0,'length'), QC.cost(0,'NCV-111'), QC.cost(0,'NCV-012'), QC.cost(0,'NCV-155'))
+    print(QC.cost(0,'length'), QC.cost(0,'NCV-111'), QC.cost(0,'NCV-012'), QC.cost(0,'NCV-155'), tol)
     #f.write('\n')
     
 #f.close()

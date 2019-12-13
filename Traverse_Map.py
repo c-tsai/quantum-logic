@@ -4,29 +4,37 @@ Created on Thu Dec  5 13:12:05 2019
 
 @author: v-catsai
 """
+from table import Hamming_Dist
 
 class Node:
     def __init__(self, i, bit_len):
         self.id = i
-        self.pre = []
-        self.de = []
+        self.pre = set([])
+        self.de = set([])
         self.traversed = False
         self.bit_len= bit_len
+    def __del__(self):
+        #print('del')
+        del self.de
+        del self.pre
     def add_pre(self, node):
-        self.pre = self.pre + [node]
+        self.pre.add(node)
     def add_all_pre(self, lib):
         point = 1
         for i in range(self.bit_len):
             if point|self.id == self.id:
                 aim = (point|self.id) - point
+                #print(aim, self.id)
                 if not aim in lib: 
+                    #print('add')
                     lib[aim]= Node(aim, self.bit_len) 
                     lib[aim].add_all_pre(lib)
                 lib[aim].add_de(self)
+                #print(lib[aim].de)
                 #print(aim, point, self.id, lib[aim].de)
             point *= 2
     def add_de(self, node):
-        self.de = self.de + [node]
+        self.de.add(node)
         node.add_pre(self)
     def traverse_add(self):
         self.traversed = True
@@ -74,3 +82,7 @@ class Traverse_Map:
         #print(self.nodes[idx])        
         new = self.nodes[idx].traverse_add()
         self.available = self.available.union(new)
+    
+    def __del__(self):
+        for i in self.nodes: del i
+            

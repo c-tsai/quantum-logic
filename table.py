@@ -69,8 +69,8 @@ class Table:
         return t
     
     def traversed_pop(self, key):
-        self.dict.pop(key, None)
-        self.done.add(key)
+        n = self.dict.pop(key, None)
+        if n: self.done.add(key)
     
     def summ(self):
         result = 0
@@ -78,4 +78,26 @@ class Table:
             result += self.dict[i]
         return result
     
+    
+class Table_h(Table):
+    def __init__(self, length, array = 0):
+        self.dict = {}
+        self.length = length
+        if not isinstance(array, int):
+            for i in range(array.shape[0]):
+                if array[i] != -1: self.dict[i]= int(array[i])
+    def __getitem__(self, key):
+        if key in self.dict: return self.dict[key]
+        elif key < self.length: return -1
+        else: 
+            raise ValueError('"'+str(key)+'" out of range (>'+str(self.length)+')')
+    def __del__(self):
+        del self.dict
+        del self.length
+    def copy(self): 
+        t = Table(self.length)
+        t.dict= self.dict.copy()
+        return t 
+    def traversed_pop(self, key):
+        self.dict.pop(key, None)
     
