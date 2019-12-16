@@ -5,6 +5,13 @@ Created on Tue Nov 19 15:35:08 2019
 @author: v-catsai
 """
 
+def bit_list(targ, bit_len):
+    point, result = 1, []
+    for i in range(bit_len):
+        if targ &point != 0: result = result + [point]
+        point *= 2
+    return result
+
 def pla_reader(file):
     f = open(file, 'r')
     bit_len, i, t= 0, 0, 0

@@ -1,7 +1,7 @@
 import copy
 from gates import TofoliGate, SwapGate, QCircuit
 from table import Table, Hamming_Dist, Table_h
-from Control_line  import Control_lines_generator
+from Control_line_2  import Control_lines_generator
 from Traverse_Map import Traverse_Map
 
 
@@ -35,15 +35,15 @@ class QCSynthesizer:
        while not b == f_bit:
           diff, point= b^f_bit, 1
           result_gate, cost_q, cost_h= 0, 100000000, 10000000
-          #print(self.table_b, b, f_bit, typ)
+          #print( b, f_bit, typ)
           for i in range(self.bit_len):
               if not diff&point == 0:
-                  #print('|', point)
                   #print(point, diff, self.all_c_line.able_clines(b, point))
-                  lib = self.all_c_line.able_clines(b, point)
-                  for i in range(len(lib)):
-                      if not lib[i]: continue
-                      for c in lib[i]:
+                  lib = self.all_c_line.best_clines(b, point)
+                  #print('|', point, lib)
+                  for c in lib:
+#                      if not lib[i]: continue
+#                      for c in lib[i]:
                           q = TofoliGate(c,point,self.bit_len)
                           temp = QCSynthesizer(self.table_f, self.bit_len, self.table_b)
                           temp_c = copy.deepcopy(result)
@@ -61,13 +61,14 @@ class QCSynthesizer:
                               param= temp
                           else: del temp_c
                           del temp
-                      break
+#                      break
                         #print(c, point)
                           #if not control_min: break
                   #if not len(candi)==0 and not control_min: break
               point *=2
           del result
           result = result_gate
+          #print(result)
           b = result.inf(i_bit)
        return result, param
    

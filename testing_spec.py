@@ -20,7 +20,7 @@ for spec in os.listdir(folder):
     #print(array.shape, bit_len)
     Q= QCSynthesizer(table, bit_len)
     start = time.time()
-    Q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
+    Q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='NCV-111')
     QC= Q.output_circuit()
     tol = time.time()-start
     #print string

@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace std;
+
 
 class Gate {
 public:
@@ -48,15 +50,15 @@ ostream &operator<<(ostream &os, Gate* g);
 ostream &operator<<(ostream &os, QCircuit* c) { 
 	for (auto q : *(c->q_vec)) { os << q << endl; }return os;}
  
-/*
-void main() {
-	Gate* s = &SwapGate(1, 2, 3);
-	Gate* t = &TofoliGate(1, 2, 3);
+
+int main() {
+	Gate* s =  new SwapGate(1, 2, 3);
+	Gate* t = new TofoliGate(1, 2, 3);
 	vector<Gate*> t_vec, s_vec;
 	t_vec.push_back(t); s_vec.push_back(s);
-	QCircuit* c1 = &QCircuit(&t_vec);
-	QCircuit* c2 = &QCircuit(&s_vec);
+	QCircuit* c1 = new QCircuit(&t_vec);
+	QCircuit* c2 = new QCircuit(&s_vec);
 	c1->add(c2);
 	cout << c1;
 };
-*/
+
