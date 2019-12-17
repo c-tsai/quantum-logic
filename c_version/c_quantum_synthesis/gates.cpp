@@ -1,27 +1,28 @@
-#include <iostream>
-#include <vector>
 #include <algorithm>
-using namespace std;
+#include "gates.h"
 
 
 int TofoliGate::inf(int bit) {
+	std::cout << bit<< 't' << endl;
 	if (bit == -1) { return -1; }
-	if (bit&get_bit1() == get_bit1()) { return bit^get_bit2(); }
+	if ((bit&get_bit1()) == get_bit1()) { return bit^get_bit2(); }
 	return bit;
 }
 
 int SwapGate::inf(int bit) {
+	std::cout << bit<< 's' << endl;
 	if (bit == -1) { return -1; }
-	int b = bit | get_bit1() | get_bit2() - get_bit1() - get_bit2();
-	if (bit&get_bit1() == get_bit1()) { return b += get_bit2(); }
-	if (bit&get_bit2() == get_bit2()) { return b += get_bit1(); }
+	int b = (bit | get_bit1() |get_bit2()) - get_bit1() - get_bit2();
+	if ((bit&get_bit1()) == get_bit1()) { return b += get_bit2(); }
+	if ((bit&get_bit2()) == get_bit2()) { return b += get_bit1(); }
 	return b;
 }
 
 QCircuit* QCircuit::reverse() {
 	std::reverse(q_vec->begin(), q_vec->end()); vector<Gate*>* q_rev = q_vec;
 	std::reverse(q_vec->begin(), q_vec->end());
-	return &QCircuit(q_rev);
+	QCircuit* q_p = new QCircuit(q_rev);
+	return q_p;
 }
 
 ostream &operator<<(ostream &os, Gate* g) {
