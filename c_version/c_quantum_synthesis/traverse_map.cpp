@@ -18,9 +18,9 @@ void Node::add_all_pre(std::unordered_map<int, Node*>* m, int b_len) {
 			
 			if (m->find(aim) == m->end()) {
 				Node* n = new Node(aim);
-				(*m)[aim] = n;
+				m->insert(std::pair<int,Node*>(aim,n));
 			}
-			(*m)[aim]->add_de(this);
+			m->find(aim)->second->add_de(this);
 		} point = point << 1;
 	}
 }

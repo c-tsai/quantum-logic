@@ -50,7 +50,7 @@ public:
 			dict = new unordered_map<int, int>;
 			for (auto i = vec_begin(); i != vec_end(); i++) {
 				int id = (*i)->control_num(); auto got = dict->find(id);
-				if (got == dict_end()) { (*dict)[id] = 1; }
+				if (got == dict_end()) { dict->insert(std::pair<int,int>(id,1)); }
 				else { got->second++; }
 			}
 		}
@@ -60,6 +60,8 @@ public:
 	QCircuit* reverse();
 	vector<Gate*>::iterator vec_begin() { return q_vec->begin(); }
 	vector<Gate*>::iterator vec_end() { return q_vec->end(); }
+	vector<Gate*>::iterator vec_rbegin() { return q_vec->rbegin(); }
+	vector<Gate*>::iterator vec_rend() { return q_vec->rend(); }
 	unordered_map<int, int>::iterator dict_begin() { return dict->begin(); }
 	unordered_map<int, int>::iterator dict_end() { return dict->end(); }
 	int inf(int bit);

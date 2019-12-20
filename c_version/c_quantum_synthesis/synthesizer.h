@@ -3,7 +3,7 @@
 #include <unordered_set>
 
 
-/*DFS=0; BFS=1; Dym =2; Dym_DFS=3*/
+/*given order=-1;DFS=0; BFS=1; Dym =2; Dym_DFS=3*/
 
 class QCSynthesizer {
 public:
@@ -31,11 +31,27 @@ public:
 	}
 	void add(QCircuit* cir, char typ, Table* t_b=0, Table* t_f=0, Table* t_h=0);
 	void algorithm_selector(int alg, int* ord, bool cont_m, char direction, char c_typ);
-	void order_alg(int* ord, bool permute, bool cont_m, char direction, char c_typ);
-	void DFS_alg(bool permute, bool cont_m, char direction, char c_typ);
-	void BFS_alg(bool permute, bool cont_m, char direction, char c_typ);
-	void Dym_alg(bool permute, bool cont_m, char direction, char c_typ);
-	void DymDFS_alg(bool permute, bool cont_m, char direction, char c_typ);
+
+	void order_alg(int* ord, bool permute, bool cont_m, char direction, char c_typ) {
+		if (permute) { permuting(-1, ord, cont_m, direction, c_typ); }
+		else { given_order_alg(ord, cont_m, direction, c_typ); }
+	}
+	void DFS_alg(bool permute, bool cont_m, char direction, char c_typ) {
+		if (permute) { permuting(0, 0, cont_m, direction, c_typ); }
+		else { dynamic_proto(DFS, cont_m, direction, c_typ); }
+	}
+	void BFS_alg(bool permute, bool cont_m, char direction, char c_typ) {
+		if (permute) { permuting(1, 0, cont_m, direction, c_typ); }
+		else { dynamic_proto(BFS, cont_m, direction, c_typ); }
+	}
+	void Dym_alg(bool permute, bool cont_m, char direction, char c_typ) {
+		if (permute) { permuting(2, 0, cont_m, direction, c_typ); }
+		else { dynamic_proto(Dym, cont_m, direction, c_typ); }
+	}
+	void DymDFS_alg(bool permute, bool cont_m, char direction, char c_typ) {
+		if (permute) { permuting(3, 0, cont_m, direction, c_typ); }
+		else { dynamic_proto(DymDFS, cont_m, direction, c_typ); }
+	}
 
 private:
 	QCircuit* gate_syns(int i_b, int f_b, char typ, bool cont_m, char c_typ);
@@ -51,7 +67,7 @@ private:
 	void traverse(int targ);
 	void given_order_alg(int* ord, bool cont_m, char direction, char c_typ);
 	void dynamic_proto(QCircuit* (*f)(std::unordered_set<int>*, bool, char, char), bool cont_m, char direction, char c_typ);
-	void permuting(int alg, bool cont_m, char direction, char c_typ);
+	void permuting(int alg, int* ord, bool cont_m, char direction, char c_typ);
 	void algorithm_selector(int alg, int* ord, bool cont_m, char direction, char c_typ);
 
 

@@ -12,8 +12,8 @@ public:
 		lib = new std::unordered_map<int, int>; }
 	~Table() { delete lib; }
 	const int operator [] (int) const;
-	int& operator [] (int i) { return (*lib)[i]; }
-	void set_value(int b1, int b2) { (*lib)[b1] = b2; }
+	int& operator [] (int i) { return lib->find(i)->second; }
+	void set_value(int b1, int b2) { lib->insert(std::pair<int,int>(b1,b2)); }
 	int summ();
 	int len() { return length; }
 	std::unordered_map<int,int>::iterator begin() { return lib->begin(); }
