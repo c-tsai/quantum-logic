@@ -70,6 +70,7 @@ public:
 private:
 	vector<Gate*>* q_vec;
 	unordered_map<int, int>* dict;
+	char typ
 
 };
 
@@ -88,8 +89,7 @@ int main() {
 	QCircuit* c2 = new QCircuit(&s_vec);
 	c1->add(c2, 'f');
 	QCircuit* c3 = c1->reverse();
-	cout << c3;
-	cout << 3 <<' ' << c1->inf(3);
+	cout << c3->cost('q');
 };
 
 

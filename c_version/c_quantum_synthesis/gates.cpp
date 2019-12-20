@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "gates.h"
+#include "table.h"
 #include "tool.h"
 
 
@@ -40,17 +40,25 @@ void QCircuit::add(QCircuit* q_cir, char typ) {
 	for (auto i = q_cir->dict_begin(); i != q_cir->dict_end(); i++) {
 		auto got = dict->find(i->first);
 		if (got == dict->end()) { (*dict)[i->first] = 1; }
-		else { (got->second)++; }
+		else { (got->second) += 1; }
 	}
 }
 
 int QCircuit::cost(char c_typ) {
 	if (c_typ == 'l') { return size(); }
+	else {
+		int table[10] = { 1,1,5,13,29,61,125,253,509,1021 };
+		int result = 0;
+		for (auto i = dict_begin(); i != dict_end(); i++) {
+			if ((i->first) < 10) { result += (table[i->first] * (i->second)); }
+			else { result += ((1 << ((i->first) + 1)) - 3); }
+		}return result;
+	}
 }
 
 QCircuit* QCircuit::reverse() {
-	vector<Gate*> q_rev(q_vec->rbegin(), q_vec->rend());
-	QCircuit* q_p = new QCircuit(&q_rev, dict);
+	vector<Gate*>* q_rev= new vector<Gate*>(q_vec->rbegin(), q_vec->rend());
+	QCircuit* q_p = new QCircuit(q_rev, dict);
 	return q_p;
 }
 

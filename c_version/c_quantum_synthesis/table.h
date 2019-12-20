@@ -14,7 +14,7 @@ public:
 	const int operator [] (int) const;
 	int& operator [] (int i) { return (*lib)[i]; }
 	void set_value(int b1, int b2) { (*lib)[b1] = b2; }
-	int diff_summ();
+	int summ();
 	int len() { return length; }
 	std::unordered_map<int,int>::iterator begin() { return lib->begin(); }
 	std::unordered_map<int, int>::iterator end() { return lib->end(); }

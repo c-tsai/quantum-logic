@@ -6,10 +6,10 @@ const int Table::operator [] (int bit) const {
 	if (got == lib->end()) { return -1; }
 	return got->second;
 }
-int Table::diff_summ() {
+int Table::summ() {
 	int result = 0;
 	for (auto it = lib->begin(); it != lib->end(); it ++) {
-		result += std::abs((it->second) - (it->first));}
+		result += (it->second);}
 	return result;
 }
 
