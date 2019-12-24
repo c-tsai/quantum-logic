@@ -1,10 +1,10 @@
 #include <algorithm>
 #include "table.h"
-#include "tool.h"
+#include "gates.h"
 
 
 int TofoliGate::inf(int bit) {
-	std::cout << bit<< 't' << endl;
+	//std::cout << bit<< 't' << endl;
 	if (bit == -1) { return -1; }
 	if ((bit&get_bit1()) == get_bit1()) { return bit^get_bit2(); }
 	return bit;
@@ -12,13 +12,13 @@ int TofoliGate::inf(int bit) {
 
 int TofoliGate::control_num() {
 	if (cont_n == -1) {
-		cont_n = Hamming_dist(get_bit1(), 0, get_length());}
+		cont_n = Hamming_Dist(get_bit1(), 0, get_length());}
 	//std::cout << cont_n;
 	return cont_n;
 }
 
 int SwapGate::inf(int bit) {
-	std::cout << bit<< 's' << endl;
+	//std::cout << bit<< 's' << endl;
 	if (bit == -1) { return -1; }
 	int b = (bit | get_bit1() |get_bit2());
 	if ((bit&get_bit1()) == 0) { return b -= get_bit2(); }
@@ -62,6 +62,7 @@ QCircuit* QCircuit::reverse() {
 	return q_p;
 }
 
+/*
 ostream &operator<<(ostream &os, Gate* g) {
 	os << "--";
 	int c = g->get_bit1(); int in = g->get_bit2();
@@ -75,3 +76,4 @@ ostream &operator<<(ostream &os, Gate* g) {
 	for (int i = 0; i < g->get_length(); i++) { os << "|--"; }
 	return os;
 }
+*/

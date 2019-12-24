@@ -1,11 +1,7 @@
 #include "table.h"
 #include <fstream>
 
-const int Table::operator [] (int bit) const {
-	std::unordered_map<int, int>::const_iterator got = lib->find(bit);
-	if (got == lib->end()) { return -1; }
-	return got->second;
-}
+
 int Table::summ() {
 	int result = 0;
 	for (auto it = lib->begin(); it != lib->end(); it ++) {
@@ -44,7 +40,7 @@ int Hamming_Dist(int bit1, int bit2, int b_len) {
 	int dist = 0;
 	int targ = bit1 ^ bit2;
 	for (int i = 0; i != b_len; i++) {
-		if (point & targ != 0) { dist++; }
+		if ((point & targ) != 0) { dist++; }
 		point = point << 1;
 		//std::cout << point;
 	}

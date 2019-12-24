@@ -1,4 +1,3 @@
-#include <iostream>
 #include <vector>
 #include <unordered_map>
 
@@ -54,34 +53,40 @@ public:
 				else { got->second++; }
 			}
 		}
+		typ = 'f';
 
 	}
 	~QCircuit() { delete q_vec, dict; }
 	QCircuit* reverse();
 	vector<Gate*>::iterator vec_begin() { return q_vec->begin(); }
 	vector<Gate*>::iterator vec_end() { return q_vec->end(); }
-	vector<Gate*>::iterator vec_rbegin() { return q_vec->rbegin(); }
-	vector<Gate*>::iterator vec_rend() { return q_vec->rend(); }
+	vector<Gate*>::reverse_iterator vec_rbegin() { return q_vec->rbegin(); }
+	vector<Gate*>::reverse_iterator vec_rend() { return q_vec->rend(); }
 	unordered_map<int, int>::iterator dict_begin() { return dict->begin(); }
 	unordered_map<int, int>::iterator dict_end() { return dict->end(); }
 	int inf(int bit);
 	int size() { return q_vec->size(); }
 	void add(QCircuit* q_cir, char typ);
+	void set_typ(char c) { typ = c; }
+	void set_targ(int t) { targ = t; }
+	char get_typ() { return typ; }
+	int get_targ() { return targ; }
 	int cost(char c_typ);
 
 private:
 	vector<Gate*>* q_vec;
 	unordered_map<int, int>* dict;
-	char typ
+	char typ;
+	int targ;
 
 };
 
-ostream &operator<<(ostream &os, Gate* g);
+/*ostream &operator<<(ostream &os, Gate* g);
 ostream &operator<<(ostream &os, QCircuit* c) { 
 	for (auto it = c->vec_begin(); it != c->vec_end(); it++)
-		{ os << (*it) << endl; }return os;}
+		{ os << (*it) << endl; }return os;}*/
  
-
+/*
 int main() {
 	Gate* s =  new SwapGate(1, 2, 3);
 	Gate* t = new TofoliGate(1, 2, 3);
@@ -93,6 +98,7 @@ int main() {
 	QCircuit* c3 = c1->reverse();
 	cout << c3->cost('q');
 };
+*/
 
 
 
