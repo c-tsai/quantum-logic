@@ -5,6 +5,7 @@ Created on Thu Dec  5 13:12:05 2019
 @author: v-catsai
 """
 from table import Hamming_Dist
+from Control_line_2 import Control_lines
 
 class Node:
     def __init__(self, i, bit_len):
@@ -68,10 +69,9 @@ class Traverse_Map:
         self.nodes = {}
         n = Node(0, self.bit_len)
         self.nodes[0] = n
-        self.available = set([0])
+        self.available = Control_lines(bit_len)
         
     def traverse(self, idx):
-        self.available.remove(idx)
         point = 1
         for i in range(self.bit_len):
             if point&idx != point and not point|idx in self.nodes: 
@@ -81,7 +81,9 @@ class Traverse_Map:
             point *= 2
         #print(self.nodes[idx])        
         new = self.nodes[idx].traverse_add()
-        self.available = self.available.union(new)
+        if new:
+            self.available.union(new, Hamming_Dist(idx,0,self.bit_len)+1)
+        self.available.pop(idx)
     
     def __del__(self):
         for i in self.nodes: del i

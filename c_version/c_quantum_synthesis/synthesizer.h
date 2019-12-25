@@ -14,7 +14,7 @@ public:
 		out_f = new QCircuit(); out_b = new QCircuit();
 		table_h = 0;
 		if (t_b == 0) { table_b = 0;  update_table_b();}
-		else { table_b->new_copy(); }
+		else { table_b= t_b->new_copy(); }
 		order = new std::vector<int>;
 		//c_g = Control_line_generator(b_len)
 	}

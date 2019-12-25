@@ -14,14 +14,37 @@ class Control_lines:
         self.lib= [set([]) for i in range(bit_len+1)]
         self.bit_len= bit_len
         self.iterid = -1
+        self.mn = 0
+        self.mx = 0
     def add(self, line, b_num=-1):
+        b=0
         if b_num == -1:
-            self.lib[Hamming_Dist(line,0,self.bit_len)].add(line)
-        else: self.lib[b_num].add(line)
+            b=Hamming_Dist(line,0,self.bit_len)
+            self.lib[b].add(line)
+        else: 
+            self.lib[b_num].add(line)
+            b = b_num
+        if b >self.mx: self.mx=b
+        if b < self.mn: self.mn=b
     def pop(self, line, b_num=-1):
+        b=0
         if b_num == -1:
-            self.lib[Hamming_Dist(line,0,self.bit_len)].discard(line)
-        else: self.lib[b_num].discard(line)
+            b =Hamming_Dist(line,0,self.bit_len)
+            self.lib[b].discard(line)
+        else: 
+            self.lib[b_num].discard(line)
+            b =b_num
+        if b==self.mn and not self.lib[b]: 
+            for i in range(self.mn+1,self.mx+1):
+                if self.lib[i]:
+                    self.mn = i
+                    break
+        elif b==self.mx and not self.lib[b]:
+            for i in range(self.mx-1, self.mn-1, -1):
+                if self.lib[i]:
+                    self.mx=i
+                    break        
+                
     def __str__(self):
         string = '['
         for s in self.lib:
@@ -37,6 +60,8 @@ class Control_lines:
         return self.lib[key] 
     def __setitem__(self, key, value):
         raise ValueError("The function shouldn't be used")
+    def max_group(self): return self.lib[self.mx]
+    def min_group(self): return self.lib[self.mn]
     def __del__(self):
         for s in self.lib: del s
         del self.lib
@@ -48,7 +73,7 @@ class Control_lines:
     
     def __len__(self): return len(self.lib)
     def __iter__(self):
-        self.iterator, self.iterid= iter(self.lib[0]), 0
+        self.iterator, self.iterid= iter(self.lib[self.mn]), self.mn
         #print(self.iterid)
         return self
     def __next__(self):
@@ -57,15 +82,23 @@ class Control_lines:
             res = next(self.iterator)
         except StopIteration:
             self.iterid += 1
-            if self.iterid == self.bit_len:
+            if self.iterid == (self.mx+1):
                 self.iterid = -1
                 raise StopIteration
             self.iterator = iter(self.lib[self.iterid])
             res = next(self)
         return res
-    def union(self, new):
-        for i in range(self.bit_len):
+    def union(self, new, b_num=-1):
+        if b_num != -1:
+            self.lib[b_num]= self.lib[b_num].union(new)
+            if b_num >self.mx: self.mx = b_num
+            if b_num < self.mn: self.mn = b_num
+            return
+        for i in range(new.mn,new.mx+1):
             self.lib[i]= self.lib[i].union(new[i])
+        if new.mn < self.mn: self.mn = new.mn
+        if new.mx > self.union: self.mx = new.mx
+        
     def copy(self):
         new = Control_lines(self.bit_len)
         new.lib= c.deepcopy(self.lib)
@@ -119,7 +152,9 @@ class Control_lines_generator:
         bit_num = Hamming_Dist(targ,0,self.bit_len)
         self.unable.add(targ, bit_num)
         self.each_num[bit_num] += 1
+        #print(bit_num, self.smllst_b)
         if bit_num == self.smllst_b:
+            #print('=============')
             if self.each_num[bit_num] == self.allowed_num:
                 self.smllst_b += 1
                 self.allowed_num *= (self.bit_len-self.smllst_b+1)
@@ -142,7 +177,7 @@ class Control_lines_generator:
     def best_clines(self, bit1, controled):
         aim = (bit1|controled) - controled
         #print(bit1, controled, aim)
-        if aim == 0: return []
+        if aim == 0: return [0]
         l = bit_list(aim, self.bit_len)
         b_num = len(l)
         result = []

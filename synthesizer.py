@@ -11,7 +11,7 @@ class QCSynthesizer:
    def __init__(self, table, bit_len, table_b=0):
        self.table_f= table.copy()
        self.length = self.table_f.length
-       self.bit_len= bit_len
+       self.bit_len= bit_len 
        self.output_f = QCircuit([])
        self.output_b = QCircuit([])
        self.table_b = Table(bit_len)
@@ -35,10 +35,10 @@ class QCSynthesizer:
        while not b == f_bit:
           diff, point= b^f_bit, 1
           result_gate, cost_q, cost_h= 0, 100000000, 10000000
-          #print( b, f_bit, typ)
+          #print( b, f_bit, typ, self.bit_len)
           for i in range(self.bit_len):
               if not diff&point == 0:
-                  #print(point, diff, self.all_c_line.able_clines(b, point))
+                  #print(point, diff, self.all_c_line.smllst_b)
                   lib = self.all_c_line.best_clines(b, point)
                   #print('|', point, lib)
                   for c in lib:
@@ -224,14 +224,16 @@ class QCSynthesizer:
            circuit, param= self.gate_syns(self.table_f[0], 0, 'f', control_min, cost_typ)
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
        #print(0, self.table_b)
-       self.all_c_line.remove(0)
        t_map = Traverse_Map(self.bit_len)
        t_map.traverse(0)
-       self.order= [0]
+       self.order= []
+       self.all_c_line.remove(0)
+       self.traverse(0)
        #print(t_map.available)
        conti = True
        while t_map.available and conti:
            idx += 1
+           #print(t_map.available, t_map.available.mx)
            circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
            #print(circuit)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
@@ -250,11 +252,8 @@ class QCSynthesizer:
            
            
    def BFS(self, candi, control_min, direction, cost_typ):
-       weight, targ= 100000, -1
-       for t in candi:
-            w = Hamming_Dist(t, 0, self.bit_len)
-            if w < weight: targ, weight = t, w
-       circuit, param, typ = 0, 0, 'f'
+       targ = min(candi.min_group())
+       #print(targ)
        if direction=='bi':
            circuit, param, typ = self.select_b_or_f(targ, control_min, cost_typ)
        else:
@@ -263,7 +262,7 @@ class QCSynthesizer:
   
      
    def DFS(self, candi, control_min, direction, cost_typ):
-       targ = min(candi)
+       targ = min(candi.max_group())
        circuit, param, typ = 0, 0, 'f'
        if direction=='bi':
            circuit, param, typ = self.select_b_or_f(targ, control_min, cost_typ)
@@ -298,11 +297,8 @@ class QCSynthesizer:
     
    def Dym_DFS(self, candi, control_min, direction, cost_typ):
        cost_q, cost_h, circuit, param, targ, typ= 10000000, 10000000, 0, 0, -1, 'f'
-       control_num = 0
-       for t in candi:
+       for t in candi.max_group():
            circuit_t, param_t, typ_t = 0, 0, 0
-           control_num_t = Hamming_Dist(t,0,self.bit_len)
-           if control_num_t < control_num: continue
            if direction == 'bi':
                circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
            else:
@@ -310,11 +306,7 @@ class QCSynthesizer:
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
            h = param_t.hamming_cost()
-           if control_num_t > control_num:
-               del circuit, param
-               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
-               control_num = control_num_t
-           elif c < cost_q: 
+           if c < cost_q: 
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
            elif c==cost_q and h < cost_h: 

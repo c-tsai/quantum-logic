@@ -4,8 +4,8 @@
 
 
 void QCSynthesizer::add(QCircuit* cir, char typ, Table* t_b, Table* t_f, Table* t_h) {
-	if (t_f != 0) { Table t_n = *t_f; table_f = &t_n; }
-	if (t_b != 0) { Table t_n = *t_f; table_b = &t_n; }
+	if (t_f != 0) { table_f = t_f->new_copy(); }
+	if (t_b != 0) { table_b= t_b->new_copy(); }
 	else if (typ == 'f') {
 		Table* temp = new Table(length);
 		for (auto i = table_f->begin(); i != table_f->end(); i++) {
@@ -22,7 +22,7 @@ void QCSynthesizer::add(QCircuit* cir, char typ, Table* t_b, Table* t_f, Table* 
 	}
 	if (typ == 'f') { out_f->add(cir, typ); }
 	else { out_b->add(cir, typ); }
-	if (t_h != 0) { Table t_n = *t_h; table_h = &t_n; }
+	if (t_h != 0) { table_h = t_h->new_copy(); }
 	else { update_table_h(); }
 }
 void QCSynthesizer::algorithm_selector(int alg, int* ord, bool cont_m, char direction, char c_typ) {
@@ -100,10 +100,9 @@ QCircuit* QCSynthesizer::Dym(std::unordered_set<int>* candi, bool cont_m, char d
 		else { c_temp = gate_syns(table_f->get_value(*i), (*i), 'f', cont_m, c_typ); }
 		int cost_temp = c_temp->cost(c_typ);
 		c_temp->set_targ((*i));
-		/*QCSynthesizer* h_calc = new QCSynthesizer(table_f, b_len, table_b);
+		QCSynthesizer* h_calc = new QCSynthesizer(table_f, b_len, table_b);
 		h_calc->add(c_temp, c_temp->get_typ());
-		int h_temp = h_calc->hamming_cost(); delete h_calc;*/
-		int h_temp = 0;
+		int h_temp = h_calc->hamming_cost(); delete h_calc;
 		if (cost_temp < cost) { cost = cost_temp; h = h_temp; delete c; c = c_temp; }
 		else if (cost_temp == cost && h_temp <h) { cost = cost_temp; h = h_temp; delete c; c = c_temp; }
 		else { delete c_temp; }
@@ -119,10 +118,9 @@ QCircuit* QCSynthesizer::DymDFS(std::unordered_set<int>* candi, bool cont_m, cha
 		else { c_temp = gate_syns(table_f->get_value(*i), (*i), 'f', cont_m, c_typ); }
 		int cost_temp = c_temp->cost(c_typ);
 		c_temp->set_targ((*i));
-		/*QCSynthesizer* h_calc = new QCSynthesizer(table_f, b_len, table_b);
+		QCSynthesizer* h_calc = new QCSynthesizer(table_f, b_len, table_b);
 		h_calc->add(c_temp, c_temp->get_typ());
-		int h_temp = h_calc->hamming_cost(); delete h_calc;*/
-		int h_temp = 0;
+		int h_temp = h_calc->hamming_cost(); delete h_calc;
 		if (cont_num_t > cont_num) { cont_num = cont_num_t; h = h_temp; cost = cost_temp; delete c; c = c_temp; }
 		else if (cost_temp < cost) { cont_num = cont_num_t; h = h_temp; cost = cost_temp; delete c; c = c_temp; }
 		else if (cost_temp == cost && h_temp < h) { cont_num = cont_num_t; h = h_temp; cost = cost_temp; delete c; c = c_temp; }
