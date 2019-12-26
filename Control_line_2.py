@@ -177,7 +177,9 @@ class Control_lines_generator:
     def best_clines(self, bit1, controled):
         aim = (bit1|controled) - controled
         #print(bit1, controled, aim)
-        if aim == 0: return [0]
+        if aim == 0: 
+            if self.unable.contain(0,0): return []
+            else: return [0] 
         l = bit_list(aim, self.bit_len)
         b_num = len(l)
         result = []

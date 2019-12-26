@@ -55,16 +55,19 @@ class QCSynthesizer:
                               result_gate, cost_q, cost_h = temp_c, t_q, t_h
                               del param
                               param= temp
+                              if t_q==0: break
                           elif t_q==cost_q and t_h < cost_h:
                               result_gate, cost_q, cost_h = temp_c, t_q, t_h
                               del param
                               param= temp
+                              if t_h==0: break
                           else: del temp_c
                           del temp
 #                      break
                         #print(c, point)
                           #if not control_min: break
                   #if not len(candi)==0 and not control_min: break
+              if cost_h==0 or cost_q==0: break
               point *=2
           del result
           result = result_gate
@@ -237,7 +240,7 @@ class QCSynthesizer:
            circuit, param, targ, typ = pick_func(t_map.available, control_min, direction, cost_typ)
            #print(circuit)
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
-           print(idx, targ)
+           #print(idx, targ)
            self.traverse(targ)
            t_map.traverse(targ)
            self.order = self.order + [targ]
@@ -309,10 +312,11 @@ class QCSynthesizer:
            if c < cost_q: 
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               if c==0: break
            elif c==cost_q and h < cost_h: 
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
-               if h ==0: break
+               if h==0: break
            else:
                del circuit_t, param_t
        return circuit, param, targ, typ
