@@ -14,6 +14,7 @@ class Node:
         self.de = set([])
         self.traversed = False
         self.bit_len= bit_len
+        self.cline_removed=False
     def __del__(self):
         #print('del')
         del self.de
@@ -37,8 +38,13 @@ class Node:
     def add_de(self, node):
         self.de.add(node)
         node.add_pre(self)
-    def traverse_add(self):
+    def remove_from_clines(self):
+        self.cline_removed=True
+        for n in self.pre:
+            if not n.cline_removed: n.remove_from_clines
+    def traverse_add(self, rm_frm_clines):
         self.traversed = True
+        if rm_frm_clines: self.remove_from_clines() #if removed might be faster
         add = set([])
         for n in self.de:
             if n.traversed: continue
@@ -71,7 +77,7 @@ class Traverse_Map:
         self.nodes[0] = n
         self.available = Control_lines(bit_len)
         
-    def traverse(self, idx):
+    def traverse(self, idx, rm_frm_clines=True):
         point = 1
         for i in range(self.bit_len):
             if point&idx != point and not point|idx in self.nodes: 
@@ -80,7 +86,7 @@ class Traverse_Map:
                 self.nodes[point|idx].add_all_pre(self.nodes)
             point *= 2
         #print(self.nodes[idx])        
-        new = self.nodes[idx].traverse_add()
+        new = self.nodes[idx].traverse_add(rm_frm_clines)
         if new:
             self.available.union(new, Hamming_Dist(idx,0,self.bit_len)+1)
         self.available.pop(idx)

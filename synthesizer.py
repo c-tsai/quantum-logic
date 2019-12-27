@@ -243,7 +243,7 @@ class QCSynthesizer:
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            #print(idx, targ)
            self.traverse(targ)
-           t_map.traverse(targ)
+           t_map.traverse(targ, not(self.table_b[targ]==-1 and self.table_f[targ]==-1))
            self.order = self.order + [targ]
            conti = False
            for i in self.table_f:
@@ -305,10 +305,13 @@ class QCSynthesizer:
        #print(candi.max_group())
        for t in candi.max_group():
            circuit_t, param_t, typ_t = 0, 0, 0
+           '''
+           
            if self.table_b[t]==-1 and self.table_f[t]==-1:
                #print(t)
                targ_u= t
                continue
+           '''
            if direction == 'bi':
                circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
            else:
