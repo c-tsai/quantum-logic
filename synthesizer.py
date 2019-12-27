@@ -61,8 +61,9 @@ class QCSynthesizer:
                               del param
                               param= temp
                               if t_h==0: break
-                          else: del temp_c
-                          del temp
+                          else: 
+                              del temp_c
+                              del temp #must have a check on if this is right
 #                      break
                         #print(c, point)
                           #if not control_min: break
@@ -299,9 +300,15 @@ class QCSynthesizer:
    
     
    def Dym_DFS(self, candi, control_min, direction, cost_typ):
-       cost_q, cost_h, circuit, param, targ, typ= 10000000, 10000000, 0, 0, -1, 'f'
+       cost_q, cost_h, circuit, param, targ, typ= 100000000000000, 10000000, 0, 0, -1, 'f'
+       fin, targ_u= False, -1
+       #print(candi.max_group())
        for t in candi.max_group():
            circuit_t, param_t, typ_t = 0, 0, 0
+           if self.table_b[t]==-1 and self.table_f[t]==-1:
+               #print(t)
+               targ_u= t
+               continue
            if direction == 'bi':
                circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
            else:
@@ -309,16 +316,27 @@ class QCSynthesizer:
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
            h = param_t.hamming_cost()
-           if c < cost_q: 
+           #print(c,h)
+           if fin and h!=0:
+               del circuit_t, param_t
+               continue 
+           if not fin and h==0: 
+               del circuit, param
+               cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               fin= True
+           elif c < cost_q: 
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
                if c==0: break
            elif c==cost_q and h < cost_h: 
                del circuit, param
                cost_q, cost_h, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
-               if h==0: break
            else:
                del circuit_t, param_t
+       if isinstance(circuit,int):
+           targ = targ_u
+           circuit, param= self.gate_syns(self.table_f[t], targ, 'f', control_min, cost_typ)
+           typ = 'f'
        return circuit, param, targ, typ
        
                

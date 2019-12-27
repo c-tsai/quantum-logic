@@ -12,7 +12,7 @@ import time
 folder ='revlib_spec'
 #f= open('BFS_NCV111_cont_revlib_result.txt', 'w+')
 #f.write('q_cost,gate_len,NCV-111,NCV-012,NCV-155'+'\n')
-print('DFS')
+print('DymDFS_cont')
 
 for spec in os.listdir(folder):
     #f.write(spec)
@@ -21,7 +21,7 @@ for spec in os.listdir(folder):
     #print(array.shape, bit_len)
     Q= QCSynthesizer(table, bit_len)
     start = time.time()
-    Q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='length')
+    Q.Dym_DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='NCV-111')
     QC= Q.output_circuit()
     tol = time.time()-start
     #print string
