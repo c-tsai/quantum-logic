@@ -138,7 +138,7 @@ class QCSynthesizer:
        for i in self.table_b:
            self.table_f[self.table_b[i]]= i
    def traverse(self, targ):
-       self.all_c_line.remove(targ)
+       #self.all_c_line.remove(targ)
        self.order = self.order + [targ]
        self.table_b.traversed_pop(targ)
        self.table_f.traversed_pop(targ)
@@ -229,9 +229,8 @@ class QCSynthesizer:
        self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
        #print(0, self.table_b)
        t_map = Traverse_Map(self.bit_len)
-       t_map.traverse(0)
+       t_map.traverse(0, self.all_c_line)
        self.order= []
-       self.all_c_line.remove(0)
        self.traverse(0)
        #print(t_map.available)
        conti = True
@@ -243,7 +242,7 @@ class QCSynthesizer:
            self.add(circuit, typ, param.table_b, param.table_f, param.total_hamming)
            #print(idx, targ)
            self.traverse(targ)
-           t_map.traverse(targ, not(self.table_b[targ]==-1 and self.table_f[targ]==-1))
+           t_map.traverse(targ, self.all_c_line, not(self.table_b[targ]==-1 and self.table_f[targ]==-1))
            self.order = self.order + [targ]
            conti = False
            for i in self.table_f:
@@ -305,13 +304,12 @@ class QCSynthesizer:
        #print(candi.max_group())
        for t in candi.max_group():
            circuit_t, param_t, typ_t = 0, 0, 0
-           '''
-           
+           #-----------this part make the algorithm traverse the specified terms first----------
            if self.table_b[t]==-1 and self.table_f[t]==-1:
                #print(t)
                targ_u= t
                continue
-           '''
+           #-------------------------------------------------------------------------
            if direction == 'bi':
                circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
            else:

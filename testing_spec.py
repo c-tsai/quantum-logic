@@ -9,7 +9,7 @@ from synthesizer import QCSynthesizer
 from table import pla_reader
 import time
 
-folder ='revlib_spec'
+folder ='test'
 #f= open('BFS_NCV111_cont_revlib_result.txt', 'w+')
 #f.write('q_cost,gate_len,NCV-111,NCV-012,NCV-155'+'\n')
 print('DymDFS')
