@@ -275,9 +275,16 @@ class QCSynthesizer:
    
     
    def Dym(self, candi, control_min, direction, cost_typ):
-       cost, hamm, circuit, param, targ, typ= 10000000, 10000000, 0, 0, -1, 'f'
+       cost, hamm, circuit, param, targ, typ= 100000000000000000, 10000000, 0, 0, -1, 'f'
+       fin, targ_u= False, -1
        for t in candi:
            circuit_t, param_t, typ_t = 0, 0, 0
+            #-----------this part make the algorithm traverse the specified terms first----------
+           if self.table_b[t]==-1 and self.table_f[t]==-1:
+               #print(t)
+               targ_u= t
+               continue
+           #-------------------------------------------------------------------------
            if direction == 'bi':
                circuit_t, param_t, typ_t = self.select_b_or_f(t, control_min, cost_typ)
            else:
@@ -285,7 +292,14 @@ class QCSynthesizer:
                typ_t = 'f'
            c = circuit_t.cost(param_t.hamming_cost(), cost_typ)
            h = param_t.hamming_cost()
-           if c < cost: 
+           if fin and h!=0:
+               del circuit_t, param_t
+               continue 
+           if not fin and h==0: 
+               del circuit, param
+               cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
+               fin= True
+           elif c < cost: 
                del circuit, param
                cost, hamm, circuit, param, targ, typ = c, h, circuit_t, param_t, t, typ_t
                if c == 0: break
@@ -295,6 +309,10 @@ class QCSynthesizer:
                if h ==0: break
            else:
                del circuit_t, param_t
+       if isinstance(circuit,int):
+           targ = targ_u
+           circuit, param= self.gate_syns(self.table_f[t], targ, 'f', control_min, cost_typ)
+           typ = 'f'
        return circuit, param, targ, typ
    
     
