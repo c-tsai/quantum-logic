@@ -82,15 +82,21 @@ QCircuit* QCSynthesizer::BFS(std::unordered_set<int>* candi, bool cont_m, char d
 		int w = Hamming_Dist((*i), 0, b_len);
 		//std::cout << (*i) << " : " << w << ", ";
 		if (w < weight) { targ = (*i); weight = w; }}
-	if (direction == 'b') { return select_b_f(targ, cont_m, c_typ);}
-	else { QCircuit* c = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ); c->set_targ(targ); return c; }
+	QCircuit* c;
+	if (direction == 'b') { c =select_b_f(targ, cont_m, c_typ);}
+	else { c = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ);}
+	c->set_targ(targ);
+	return c;
 }
 QCircuit* QCSynthesizer::DFS(std::unordered_set<int>* candi, bool cont_m, char direction, char c_typ) {
-	int targ = 10000;
+	int targ = 1000000;
 	for (auto i = candi->begin(); i != candi->end(); i++) {
 		if ((*i) < targ) { targ = (*i); }}
-	if (direction == 'b') { return select_b_f(targ, cont_m, c_typ); }
-	else { QCircuit* c = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ); c->set_targ(targ); return c; }
+	QCircuit* c;
+	if (direction == 'b') { c =select_b_f(targ, cont_m, c_typ); }
+	else { c = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ);  }
+	c->set_targ(targ);
+	return c;
 }
 QCircuit* QCSynthesizer::Dym(std::unordered_set<int>* candi, bool cont_m, char direction, char c_typ) {
 	int cost = 100000000; QCircuit* c = 0; int h = 10000000;
@@ -175,22 +181,26 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	Map* t_map = new Map(b_len);
 	t_map->traverse(0);
 	bool conti = true;
-	while (!(t_map->available()->empty()) && conti) {
+	//int count = 0;
+	while (!(t_map->available()->empty()) && conti /*&& (count<8)*/) {
 		QCircuit* cir = 0;
+		//count++;
 		switch (alg) {
 		case(0):cir = DFS(t_map->available(), cont_m, direction, c_typ); break;
 		case(1):cir = BFS(t_map->available(), cont_m, direction, c_typ); break;
 		case(2):cir = Dym(t_map->available(), cont_m, direction, c_typ); break;
 		case(3):cir = DymDFS(t_map->available(), cont_m, direction, c_typ); break;
 		}
-		std::cout << cir->get_targ() << std::endl;
+		//std::cout << cir->get_targ() << std::endl;
 		add(cir, cir->get_typ());
 		traverse(cir->get_targ());
 		t_map->traverse(cir->get_targ());
 		conti = false;
-		/*std::cout << '{';
+		/*
+		std::cout << '{';
 		for (auto i = t_map->available()->begin(); i != t_map->available()->end(); i++) { std::cout << (*i); }
-		std::cout <<'}' << std::endl;*/
+		std::cout <<'}' << std::endl;
+		*/
 		for (auto i = table_f->begin(); i != table_f->end(); i++) { 
 			if (i->second != i->first) { conti = true; break; }}
 	}

@@ -13,6 +13,7 @@ public:
 		length = t->len(); b_len = b_l;
 		out_f = new QCircuit(); out_b = new QCircuit();
 		table_h = 0;
+		
 		if (t_b == 0) { table_b = 0;  update_table_b();}
 		else { table_b= t_b->new_copy(); }
 		order = new std::vector<int>;
@@ -84,7 +85,7 @@ private:
 	std::vector<int>* order;
 	//Control_lines_generator* c_g
 };
-
+/*
 int main() {
 	Table* t = new Table(8);
 	int array[5] = {1,6,5,7,2};
@@ -98,3 +99,4 @@ int main() {
 		if (qc->inf(i) != array[i]) { throw std::invalid_argument("wrong result!!"); }
 	}
 }
+*/

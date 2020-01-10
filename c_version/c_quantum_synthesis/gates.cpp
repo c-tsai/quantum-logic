@@ -51,7 +51,7 @@ int QCircuit::cost(char c_typ) {
 		int result = 0;
 		for (auto i = dict_begin(); i != dict_end(); i++) {
 			if ((i->first) < 10) { result += (table[i->first] * (i->second)); }
-			else { result += ((1 << ((i->first) + 1)) - 3); }
+			else { result += (((1 << ((i->first) + 1)) - 3)*(i->second)); }
 		}return result;
 	}
 }
