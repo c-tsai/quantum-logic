@@ -39,8 +39,8 @@ void QCircuit::add(QCircuit* q_cir, char typ) {
 	else { q_vec->insert(q_vec->begin(), q_cir->q_vec->begin(), q_cir->q_vec->end()); }
 	for (auto i = q_cir->dict_begin(); i != q_cir->dict_end(); i++) {
 		auto got = dict->find(i->first);
-		if (got == dict->end()) { dict->insert(std::pair<int,int>(i->first,1)); }
-		else { (got->second) += 1; }
+		if (got == dict->end()) { dict->insert(std::pair<int,int>(i->first,i->second)); }
+		else { (got->second) += i->second; }
 	}
 }
 

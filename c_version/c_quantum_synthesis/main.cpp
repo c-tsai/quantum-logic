@@ -1,5 +1,6 @@
 #include "synthesizer.h"
 #include <stdexcept>
+#include <ctime>
 //#include <iostream>
 //#include "table.h"
 
@@ -13,6 +14,8 @@ int main(int argc, char** argv) {
 	}
 	std::cout << t->len() << std::endl;*/
 	QCSynthesizer* qcs = new QCSynthesizer(t, t->len());
+	std::clock_t time;
+	time = std::clock();
 	if ((argv[3])[0] == 'T' || (argv[3])[0] == 't') {
 		//std::cout << "wwwwwwwwwwwwwwwwww0" << std::endl;
 		qcs->algorithm_selector(std::stoi((argv[2])), 0, true, (argv[4])[0], (argv[5])[0]);}
@@ -22,6 +25,18 @@ int main(int argc, char** argv) {
 		//std::cout << std::stoi(argv[2]) << ' ' << (argv[4])[0] << ' ' << (argv[5])[0] << std::endl;
 	}
 	else { /*std::cout << "wwwwwwwwwwwwwwwwww2" << std::endl; */throw std::invalid_argument("the 3rd argument (indicating using control min or not) should be booleon"); }
+	time = std::clock() - time;
 	QCircuit* qc = qcs->output();
-	std::cout << "length: " <<qc->cost('l') << "   qcost(NCV-111): " << qc->cost('q') << std::endl;
+	bool right_res = true;
+	int c = 0;
+	for (auto i = t->begin(); i != t->end(); i++) { 
+		if (qc->inf(i->first) != i->second) {
+			std::cout << c << " wrong result( need " << i->second << " for " << i->first << " but got " << qc->inf(i->first) << " instead)"; 
+			right_res = false;  break;
+		}
+		c++;
+	}
+	if (right_res) {
+		std::cout << "length: " << qc->cost('l') << "   qcost(NCV-111): " << qc->cost('q') << "    time: " << ((float)time / CLOCKS_PER_SEC) << " (sec)" << std::endl;
+	}
 }

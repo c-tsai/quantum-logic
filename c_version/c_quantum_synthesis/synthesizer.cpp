@@ -36,11 +36,14 @@ void QCSynthesizer::algorithm_selector(int alg, int* ord, bool cont_m, char dire
 	}
 }
 QCircuit* QCSynthesizer::gate_syns(int i_b, int f_b, char typ, bool cont_m, char c_typ) {
+	std::cout << typ;
 	if (!cont_m) { QCircuit* c = gate_syns_simp(i_b, f_b); c->set_typ(typ); }/*to be continue*/
 }
 QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
 	QCircuit* res = new QCircuit();
 	if (i_b == -1 | f_b == -1) { return res; }
+
+	std::cout << i_b << ' ' << f_b  << std::endl;
 	int diff_1 = (i_b ^ f_b) & i_b;
 	int diff_0 = (i_b ^ f_b) & f_b;
 	int point = 1;
@@ -65,15 +68,20 @@ QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
 
 QCircuit* QCSynthesizer::select_b_f(int targ, bool cont_m, char c_typ) {
 	if (table_b->get_value(targ) == -1) {
+		std::cout << "partial specify f";
 		QCircuit* c = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ);
 		c->set_typ('f'); return c;}
 	else if (table_f->get_value(targ) == -1) {
+		std::cout << "partial specify b";
 		QCircuit* c = gate_syns(targ, table_b->get_value(targ), 'b', cont_m, c_typ);
 		c->set_typ('b'); return c;
 	}
 	QCircuit* c_f = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ);
 	QCircuit* c_b = gate_syns(targ, table_b->get_value(targ), 'b', cont_m, c_typ);
-	if (c_b->cost(c_typ) < c_f->cost(c_typ)) { c_b->set_typ('b'); c_b->set_targ(targ); delete c_f; return c_b; }
+	if (c_b->cost(c_typ) < c_f->cost(c_typ)) { 
+		c_b->set_typ('b'); c_b->set_targ(targ); 
+	//std:cout << "b " << targ << ' ' << table_f
+		delete c_f; return c_b; }
 	else { c_f->set_typ('f'); c_f->set_targ(targ); delete c_b; return c_f; }
 }
 QCircuit* QCSynthesizer::BFS(std::unordered_set<int>* candi, bool cont_m, char direction, char c_typ) {
