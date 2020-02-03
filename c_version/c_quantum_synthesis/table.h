@@ -1,4 +1,4 @@
-#include <vector>
+#include <unordered_set>
 #include <unordered_map>
 #include <string>
 #include <iostream>
@@ -39,10 +39,17 @@ private:
 
 };
 
-std::vector<int>* bit_list(int targ, int bit_len);
+std::unordered_set<int>* bit_list(int targ, int bit_len);
 Table* pla_reader(std::string file_name);
 int Hamming_Dist(int bit1, int bit2, int b_len);
-std::ostream& operator<<(std::ostream& os, Table t);
+inline std::ostream& operator<<(std::ostream& os, Table* t) {
+	os << '{';
+	for (auto it = t->begin(); it != t->end(); it++) {
+		os << it->first << ':' << it->second << ',';
+	}
+	os << '}';
+	return os;
+}
 
 
 /*

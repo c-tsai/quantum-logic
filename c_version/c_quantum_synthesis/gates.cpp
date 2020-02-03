@@ -57,23 +57,9 @@ int QCircuit::cost(char c_typ) {
 }
 
 QCircuit* QCircuit::reverse() {
-	vector<Gate*>* q_rev= new vector<Gate*>(q_vec->rbegin(), q_vec->rend());
+	std::vector<Gate*>* q_rev= new std::vector<Gate*>(q_vec->rbegin(), q_vec->rend());
 	QCircuit* q_p = new QCircuit(q_rev, dict);
 	return q_p;
 }
 
-/*
-ostream &operator<<(ostream &os, Gate* g) {
-	os << "--";
-	int c = g->get_bit1(); int in = g->get_bit2();
-	for (int i = 0; i < g->get_length(); i++) {
-		if (c % 2 == 1) { os << g->bit1_symb() << "--"; }
-		else if (in % 2 == 1) { os << g->bit2_symb() << "--"; }
-		else { os << "---"; }
-		c = c / 2; in = in / 2;
-	}
-	os << endl << "--";
-	for (int i = 0; i < g->get_length(); i++) { os << "|--"; }
-	return os;
-}
-*/
+

@@ -1,22 +1,24 @@
 #include "synthesizer.h"
 #include "traverse_map.h"
-#include <iostream>
+//#include <iostream>
 
 
 void QCSynthesizer::add(QCircuit* cir, char typ, Table* t_b, Table* t_f, Table* t_h) {
+	//std::cout << typ;
 	if (t_f != 0) { table_f = t_f->new_copy(); }
 	if (t_b != 0) { table_b= t_b->new_copy(); }
 	else if (typ == 'f') {
 		Table* temp = new Table(length);
 		for (auto i = table_f->begin(); i != table_f->end(); i++) {
+			//std::cout << i->first << i->second << cir->inf(i->second);
 			temp->set_value(i->first, cir->inf(i->second));
 		}delete table_f; table_f = temp; update_table_b();
 	}
 	else {
-		for (auto i = cir->vec_rbegin(); i != cir->vec_rend(); i++) {
+		for (auto q = cir->vec_rbegin(); q != cir->vec_rend(); q++) {
 			Table* temp = new Table(length);
 			for (auto i = table_b->begin(); i != table_b->end(); i++) {
-				temp->set_value(i->first, cir->inf(i->second));
+				temp->set_value(i->first, (*q)->inf(i->second));
 			}delete table_b; table_b = temp;
 		} update_table_f();
 	}
@@ -36,14 +38,15 @@ void QCSynthesizer::algorithm_selector(int alg, int* ord, bool cont_m, char dire
 	}
 }
 QCircuit* QCSynthesizer::gate_syns(int i_b, int f_b, char typ, bool cont_m, char c_typ) {
-	std::cout << typ;
+	//std::cout << typ;
 	if (!cont_m) { QCircuit* c = gate_syns_simp(i_b, f_b); c->set_typ(typ); }/*to be continue*/
 }
 QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
 	QCircuit* res = new QCircuit();
 	if (i_b == -1 | f_b == -1) { return res; }
 
-	std::cout << i_b << ' ' << f_b  << std::endl;
+	//std::cout << i_b << ' ' << f_b  << std::endl;
+	//std::cout << table_f << std::endl;
 	int diff_1 = (i_b ^ f_b) & i_b;
 	int diff_0 = (i_b ^ f_b) & f_b;
 	int point = 1;
@@ -68,11 +71,11 @@ QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
 
 QCircuit* QCSynthesizer::select_b_f(int targ, bool cont_m, char c_typ) {
 	if (table_b->get_value(targ) == -1) {
-		std::cout << "partial specify f";
+		//std::cout << "partial specify ";
 		QCircuit* c = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ);
 		c->set_typ('f'); return c;}
 	else if (table_f->get_value(targ) == -1) {
-		std::cout << "partial specify b";
+		//std::cout << "partial specify ";
 		QCircuit* c = gate_syns(targ, table_b->get_value(targ), 'b', cont_m, c_typ);
 		c->set_typ('b'); return c;
 	}
@@ -172,7 +175,7 @@ void QCSynthesizer::traverse(int targ) {
 }
 void QCSynthesizer::given_order_alg(int* ord, int len, bool cont_m, char direction, char c_typ) {
 	for (int i = 0; i!=len; i++){
-		std::cout << i << std::endl;
+		//std::cout << i << std::endl;
 		QCircuit* c_temp = 0;
 		if (direction == 'b') { c_temp = select_b_f(ord[i], cont_m, c_typ); }
 		else { c_temp = gate_syns(table_f->get_value(ord[i]), ord[i], 'f', cont_m, c_typ); }
@@ -184,7 +187,9 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	QCircuit* c_temp = 0;
 	if (direction == 'b') { c_temp = select_b_f(0, cont_m, c_typ); }
 	else { c_temp = gate_syns(table_f->get_value(0), 0, 'f', cont_m, c_typ); }
+	//std::cout << table_f << table_b << std::endl;
 	add(c_temp, c_temp->get_typ());
+	//std::cout << table_f << table_b << std::endl;
 	traverse(0);
 	Map* t_map = new Map(b_len);
 	t_map->traverse(0);

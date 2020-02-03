@@ -11,11 +11,11 @@ int Table::summ() {
 
 
 
-std::vector<int>* bit_list(int targ, int bit_len) {
-	std::vector<int>* result= new std::vector<int>;
+std::unordered_set<int>* bit_list(int targ, int bit_len) {
+	std::unordered_set<int>* result= new std::unordered_set<int>;
 	int point = 1;
 	for (int i = 0; i != bit_len; i++) {
-		if ((point & targ) != 0) { result->push_back(point); }
+		if ((point & targ) != 0) { result->insert(point); }
 		//std::cout << (point& targ);
 		point = point << 1;
 	}
@@ -47,13 +47,3 @@ int Hamming_Dist(int bit1, int bit2, int b_len) {
 	return dist;
 }
 
-std::ostream& operator<<(std::ostream& os, Table t) {
-	os << '{';
-	
-	for (auto it = t.begin(); it != t.end(); it++) {
-		os << it->first << ':' << it->second << ',';
-	}
-	
-	os << '}';
-	return os;
-}
