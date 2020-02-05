@@ -11,11 +11,11 @@ int Table::summ() {
 
 
 
-std::unordered_set<int>* bit_list(int targ, int bit_len) {
-	std::unordered_set<int>* result= new std::unordered_set<int>;
+std::vector<int>* bit_list(int targ, int bit_len) {
+	std::vector<int>* result= new std::vector<int>;
 	int point = 1;
 	for (int i = 0; i != bit_len; i++) {
-		if ((point & targ) != 0) { result->insert(point); }
+		if ((point & targ) != 0) { result->push_back(point); }
 		//std::cout << (point& targ);
 		point = point << 1;
 	}

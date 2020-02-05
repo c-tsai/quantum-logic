@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-
+//remember to check if dict could be implement into an array
 class Gate {
 public:
 	Gate(int b1, int b2, int len) :length(len), bit1(b1), bit2(b2){}

@@ -97,7 +97,7 @@ class Control_lines:
         for i in range(new.mn,new.mx+1):
             self.lib[i]= self.lib[i].union(new[i])
         if new.mn < self.mn: self.mn = new.mn
-        if new.mx > self.union: self.mx = new.mx
+        if new.mx > self.mx: self.mx = new.mx
         
     def copy(self):
         new = Control_lines(self.bit_len)
