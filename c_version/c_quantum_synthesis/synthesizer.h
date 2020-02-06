@@ -1,5 +1,6 @@
 #include "table.h"
 #include "gates.h"
+#include "control_lines.h"
 #include <stdexcept>
 #include <unordered_set>
 
@@ -17,13 +18,13 @@ public:
 		if (t_b == 0) { table_b = 0;  update_table_b();}
 		else { table_b= t_b->new_copy(); }
 		order = new std::vector<int>;
-		//c_g = Control_line_generator(b_len)
+		c_g = Control_generator(b_len)
 	}
 	~QCSynthesizer() {
 		delete table_f, table_b, table_h;
 		delete out_f, out_b;
 		delete order;
-		//delete c_g
+		delete c_g
 	}
 	int hamming_cost() {
 		if (table_h == 0) { update_table_h(); }
@@ -83,7 +84,7 @@ private:
 	QCircuit* out_f;
 	QCircuit* out_b;
 	std::vector<int>* order;
-	//Control_lines_generator* c_g
+	Control_generator* c_g
 };
 /*
 int main() {

@@ -58,6 +58,7 @@ public:
 	}
 	~QCircuit() { delete q_vec, dict; }
 	QCircuit* reverse();
+	QCircuit* copy();
 	std::vector<Gate*>::iterator vec_begin() { return q_vec->begin(); }
 	std::vector<Gate*>::iterator vec_end() { return q_vec->end(); }
 	std::vector<Gate*>::reverse_iterator vec_rbegin() { return q_vec->rbegin(); }

@@ -1,10 +1,12 @@
 #include <unordered_set>
-#include <unordered_map>
+#include "control_lines.h"
+//#include <iostream> //for testing
 
 class Node {
 public:
-	Node(int i) {
-		id = i; traversed = false;
+	Node(int i, int len) {
+		id = i; bit_len = len; traversed = false;
+		c_line_removed = false;
 		pre = new std::unordered_set<Node*>;
 		de = new std::unordered_set<Node*>;
 	}
@@ -13,45 +15,54 @@ public:
 	bool if_traversed() { return traversed; }
 	std::unordered_set<Node*>::iterator pre_begin() { return pre->begin(); }
 	std::unordered_set<Node*>::iterator pre_end(){return pre->end();}
-	void traverse_add(std::unordered_set<int>* m_p);
+	std::set<int>* traverse_add(Control_generator* c_g, bool rm_frm_clines);
+	void remove_from_clines(Control_generator* c_g);
 	void set_traversed() { traversed = true; }
 	void add_pre(Node* n) { pre->insert(n); }
 	void add_de(Node* n) { de->insert(n);  n->add_pre(this); }
-	void add_all_pre(std::unordered_map<int, Node*>* m, int b_len);
+	void add_all_pre(std::unordered_map<int, Node*>* m);
+	//std::unordered_set<Node*>* de;//for testing
 
 private:
 	int id;
+	int bit_len;
 	bool traversed;
+	bool c_line_removed;
 	std::unordered_set<Node*>* pre;
-	std::unordered_set<Node*>* de;
+	std::unordered_set<Node*>* de;//real one
 
 };
 
 class Map {
 public:
 	Map(int bit_len) {
-		b_len = bit_len; Node* n = new Node(0);
+		b_len = bit_len; Node* n = new Node(0, b_len);
 		nodes = new std::unordered_map<int, Node*>;
-		able = new std::unordered_set<int>;
-		(*nodes)[0] = n; able->insert(0);
+		able = new Control_lines(bit_len);
+		(*nodes)[0] = n;
 	}
 	~Map() {
 		for (auto i = nodes->begin(); i != nodes->end(); i++) { delete i->second; }
 		delete nodes;
 		delete able;
 	}
-	std::unordered_set<int>* available() { return able; }
-	void traverse(int idx);
+	Control_lines* available() { return able; }
+	void traverse(int idx, Control_generator* c_g, bool rm_frm_clines=true);
+	//Control_lines* able;// for testing
+	//std::unordered_map<int, Node*>* nodes;//for testing
 private:
 	int b_len;
-	std::unordered_set<int>* able;
-	std::unordered_map<int, Node*>* nodes;
+	Control_lines* able;// real one
+	std::unordered_map<int, Node*>* nodes;//real one
 };
 
-/*
-int main() {
+
+/*int main() {
 	Map* m = new Map(3);
-	while (!(m->able->empty())) {
+	Control_generator* cg = new Control_generator(3);
+	int s = 0;
+	while (true) {
+		if (s > 10) { break; }
 		std::cout << '{';
 		for (auto i = m->nodes->begin(); i != m->nodes->end(); i++) {
 			std::cout << i->first << ':';
@@ -61,6 +72,12 @@ int main() {
 			std::cout << ',';
 		}
 		std::cout << '}'<< std::endl;
-		m->traverse(*(m->able->begin()));
+		m->traverse((m->able->begin()).element(),cg);
+		std::cout << "able traverse term:[";
+		for (auto i = m->available()->begin(); i != m->available()->end(); i++) {
+			std::cout << i.element() << ',';
+		}
+		std::cout << ']' << std::endl;
+		s++;
 	}
 }*/

@@ -1,7 +1,8 @@
 #include <unordered_map>
 #include <set>
 #include <vector>
-#include <iostream>// for testing
+//#include <iostream>// for testing
+//#include "table.h"//for testing
 
 // remember to check if implement both unordered_set(for Control_generator and Control_lib) and 
 // set(for traverse_map's available) version on the Control_lines can improve the performance
@@ -26,10 +27,10 @@ public:
 			end = c->get_group(id)->end();}
 		iterator(int id) { iterid = id; }
 		iterator operator ++ (int) {
-			std::cout << "increment" << std::endl;
+			//std::cout << "increment" << std::endl;
 			if (!(origin->get_group(iterid)->empty())) { iter++; }
 			while (iter == end && iterid < mx) {
-				std::cout << "next strand" << std::endl;
+				//std::cout << "next strand" << std::endl;
 				iterid++; iter = origin->get_group(iterid)->begin(); end = origin->get_group(iterid)->end();
 			}
 			return *this;
@@ -45,11 +46,12 @@ public:
 			return *iter; }
 		virtual int first() { return 0; }
 		virtual std::vector<int>* second() { return 0; }
+		int iterid; //for testing
 	protected:
 		Control_lines* origin;
 		std::set<int>::iterator iter;
 		std::set<int>::iterator end;
-		int iterid;
+		//int iterid; //the real one
 		int mx;
 	};
 	iterator begin() {
@@ -63,8 +65,8 @@ public:
 
 
 	void pop(int line, int b_num = -1);
-	void unioning(Control_lines* other, int b_num = -1);
-	void add(int line, int b_num = -1);// for testing put in public
+	void unioning(std::set<int>* other, int b_num);
+	//void add(int line, int b_num = -1);// for testing put in public
 	//bool contain(int targ, int b_num = -1);// for testing put in public
 	std::set<int>* max_group() { return lib[mx]; };
 	std::set<int>* min_group() { return lib[mn]; };
@@ -72,7 +74,7 @@ public:
 	int get_max() { return mx; }
 
 protected:
-	//void add(int line, int b_num = -1); //the real private add
+	void add(int line, int b_num = -1); //the real private add
 	bool contain(int targ, int b_num = -1); //the real private one
 	
 	
@@ -129,13 +131,14 @@ public:
 
 	
 	void pop(int line, int b_num = -1);
-	void add(int key, std::vector<int>* clines, int b_num = -1);// public for testing
+	//void add(int key, std::vector<int>* clines, int b_num = -1);// public for testing
 	//Control_lines* get(int targ, int b_num = -1);// public for testing
 	std::unordered_map<int, std::vector<int>*>* get_group(int key) { return lib[key]; }
 
 private:
-	//void add(int key, Control_lines* clines, int b_num = -1);// real private one
+	void add(int key, std::vector<int>* clines, int b_num = -1);// real private one
 	std::vector<int>* get(int targ, int b_num = -1);// real private one
+	bool contain(int line, int b_num);
 
 	std::unordered_map<int, std::vector<int>*>** lib;
 	
@@ -154,30 +157,33 @@ public:
 	}
 	~Control_generator() { delete lib, unable; delete[]  each_num; }
 	void remove(int targ);
-	void combine(std::set<int>* b_list, int targ, int num);
-	std::set<int>* best_clines(int bit1, int controled);
+	void combine(std::vector<int>* b_list, int targ, int num);
+	std::vector<int>* best_clines(int bit1, int controled);
+	//Control_lines* unable;//for testing
+	//Control_lib* lib;//for testing
 
 private:
-	Control_lines* unable;
-	Control_lib* lib;
+	Control_lines* unable; //real one
+	Control_lib* lib;//real one
 	int* each_num;
 	int smllst_b;
 	int allowed_num;
 	int bit_len;
 };
 
-int main(int argc, char** argv) {
-	std::vector<int>* c = new std::vector<int>;
-	std::vector<int>* d = new std::vector<int>;
-	Control_lib* lib = new Control_lib(3);
-	lib->add(4, c);
-	lib->add(3, d);
-	//lib->pop(3);
+/*int main(int argc, char** argv) {
+	Control_generator* c = new Control_generator(3);
+	c->remove(0);
+	c->remove(2);
+	c->remove(4);
+	//std::vector<int>* list = bit_list(3, 3);
+	//std::cout << "the size of the original b_list: " << list->size() << std::endl;
+	
 	int s = 0;
-	for (auto i = lib->begin(); i != lib->end(); i++) {
+	std::vector<int>* res = c->best_clines(7, 1);
+	for (auto i = res->begin(); i != res->end(); i++) {
 		s++;
-		std::cout << i.first()  << std::endl;
-		if (s > 5) { break; }
+		std::cout << *i<< std::endl;
+		if (s > 7) { break; }
 	}
-	std::cout <<"max group: " << lib->get_max() << std::endl;
-}
+}*/

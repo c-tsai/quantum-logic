@@ -1,5 +1,6 @@
 #include "synthesizer.h"
 #include "traverse_map.h"
+#include <limits>
 //#include <iostream>
 
 
@@ -39,7 +40,39 @@ void QCSynthesizer::algorithm_selector(int alg, int* ord, bool cont_m, char dire
 }
 QCircuit* QCSynthesizer::gate_syns(int i_b, int f_b, char typ, bool cont_m, char c_typ) {
 	//std::cout << typ;
-	if (!cont_m) { QCircuit* c = gate_syns_simp(i_b, f_b); c->set_typ(typ); }/*to be continue*/
+	if (!cont_m) { QCircuit* c = gate_syns_simp(i_b, f_b); c->set_typ(typ); return c; }
+	QCircuit* res = new QCircuit(); int b = i_b;
+	while (b != f_b) {
+		int diff = (b ^ f_b); int point = 1; int cost_q = INT_MAX; int cost_h = INT_MAX;
+		QCircuit* res_sub = 0;
+		for (int i = 0; i < b_len; i++) {
+			if (diff & point != 0) {
+				std::vector<int>* lib = c_g->best_clines(b, point);
+				for (auto i = lib->begin(); i != lib->end(); i++) {
+					q = TofoliGate(*i, point, b_len);
+					std::vector<Gate*>* vec = new std::vector<Gate*>;
+					vec->push_back(q);
+					QCircuit* one_cir = QCircuit(vec);
+					QCSynthesizer* syns_temp = new QCSynthesizer(table_f, b_len, table_b);
+					QCircuit* cir_temp = res->copy();
+					cir_temp->add(one_cir, 'f');
+					syns_temp->add(cir_temp, typ);
+					int t_h = syns_temp->hamming_cost();
+					int t_q = cir_temp->cost(c_typ);
+					if (t_h == 0) { res_sub = cir_temp; cost_q = t_q; cost_h = t_h; break; }
+					else if (t_q < cost_q) {
+						res_sub = cir_temp; cost_q = t_q; cost_h = t_h;
+						if (t_q == 0) { break; }
+					}
+					else if (t_q == cost_q && t_h < cost_h) {
+						res_sub = cir_temp; cost_q = t_q; cost_h = t_h;
+						if (t_h == 0) { break; }
+					}
+					else { delete cir_temp; } delete syns_temp;
+				}
+			}if (cost_h == 0 or cost_q == 0) { break; } point = point << 1;
+		}delete res; res = res_sub; b = res->inf(b);
+	}return res;
 }
 QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
 	QCircuit* res = new QCircuit();
@@ -189,6 +222,7 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	else { c_temp = gate_syns(table_f->get_value(0), 0, 'f', cont_m, c_typ); }
 	//std::cout << table_f << table_b << std::endl;
 	add(c_temp, c_temp->get_typ());
+	delete c_temp
 	//std::cout << table_f << table_b << std::endl;
 	traverse(0);
 	Map* t_map = new Map(b_len);
@@ -209,6 +243,7 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 		traverse(cir->get_targ());
 		t_map->traverse(cir->get_targ());
 		conti = false;
+		delete cir;
 		/*
 		std::cout << '{';
 		for (auto i = t_map->available()->begin(); i != t_map->available()->end(); i++) { std::cout << (*i); }

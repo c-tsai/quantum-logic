@@ -42,6 +42,7 @@ void QCircuit::add(QCircuit* q_cir, char typ) {
 		if (got == dict->end()) { dict->insert(std::pair<int,int>(i->first,i->second)); }
 		else { (got->second) += i->second; }
 	}
+	delete q_cir;
 }
 
 int QCircuit::cost(char c_typ) {
@@ -60,6 +61,13 @@ QCircuit* QCircuit::reverse() {
 	std::vector<Gate*>* q_rev= new std::vector<Gate*>(q_vec->rbegin(), q_vec->rend());
 	QCircuit* q_p = new QCircuit(q_rev, dict);
 	return q_p;
+}
+
+QCircuit* QCircuit::copy() {
+	std::vector<Gate*>* n_vec= new std::vector<Gate*>(q_vec);
+	std::unordered_map<int, int>* n_dict=new std::unordered_map<int, int>(dict);
+	QCircuit* res = new QCircuit(n_vec, n_dict);
+	return res;
 }
 
 
