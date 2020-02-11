@@ -38,11 +38,15 @@ void QCircuit::add(QCircuit* q_cir, char typ) {
 	if (typ == 'f') {q_vec->insert(q_vec->end(), q_cir->q_vec->begin(), q_cir->q_vec->end());}
 	else { q_vec->insert(q_vec->begin(), q_cir->q_vec->begin(), q_cir->q_vec->end()); }
 	for (auto i = q_cir->dict_begin(); i != q_cir->dict_end(); i++) {
+		//std::cout << i->first << std::endl;
 		auto got = dict->find(i->first);
-		if (got == dict->end()) { dict->insert(std::pair<int,int>(i->first,i->second)); }
+		if (got == dict->end()) { 
+			//std::cout << "new pair: " << i->first << ' ' << i->second << std::endl;
+			dict->insert({ {i->first,i->second} });
+			//std::cout << "new pair: " << i->first << ' ' << i->second << std::endl;
+		}
 		else { (got->second) += i->second; }
 	}
-	delete q_cir;
 }
 
 int QCircuit::cost(char c_typ) {
@@ -64,8 +68,8 @@ QCircuit* QCircuit::reverse() {
 }
 
 QCircuit* QCircuit::copy() {
-	std::vector<Gate*>* n_vec= new std::vector<Gate*>(q_vec);
-	std::unordered_map<int, int>* n_dict=new std::unordered_map<int, int>(dict);
+	std::vector<Gate*>* n_vec= new std::vector<Gate*>(*q_vec);
+	std::unordered_map<int, int>* n_dict=new std::unordered_map<int, int>(*dict);
 	QCircuit* res = new QCircuit(n_vec, n_dict);
 	return res;
 }

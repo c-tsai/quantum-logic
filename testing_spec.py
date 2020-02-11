@@ -9,7 +9,7 @@ from synthesizer import QCSynthesizer
 from table import pla_reader
 import time
 
-folder ='revlib_spec'
+folder ='test1'
 #f= open('BFS_NCV111_cont_revlib_result.txt', 'w+')
 #f.write('q_cost,gate_len,NCV-111,NCV-012,NCV-155'+'\n')
 print('Dym_NCV-111')
@@ -21,7 +21,7 @@ for spec in os.listdir(folder):
     #print(array.shape, bit_len)
     Q= QCSynthesizer(table, bit_len)
     start = time.time()
-    Q.Dym_Algorithm(permute=False, control_min=False, direction= 'bi', cost_typ='NCV-111')
+    Q.DFS_Algorithm(permute=False, control_min=True, direction= 'bi', cost_typ='NCV-111')
     QC= Q.output_circuit()
     tol = time.time()-start
     #print string

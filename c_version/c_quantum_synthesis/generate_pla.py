@@ -29,7 +29,7 @@ for row in reader:
         if int(float(row[i])) != -1:
             f.write('{0:03b}'.format(i)+ ' '+ '{0:03b}'.format(int(float(row[i])))+'\n')
     f.close()
-    string = os.popen('./a.exe temp.pla '+str(mode)+ ' f bi l').read()
+    string = os.popen('./a.exe temp.pla '+str(mode)+ ' t bi q').read()
     #print(string)
     if string.split()[-1] == 'instead)': 
         failed += 1

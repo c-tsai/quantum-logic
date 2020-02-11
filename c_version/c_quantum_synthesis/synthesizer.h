@@ -1,6 +1,6 @@
 #include "table.h"
 #include "gates.h"
-#include "control_lines.h"
+#include "traverse_map.h"
 #include <stdexcept>
 #include <unordered_set>
 
@@ -18,13 +18,13 @@ public:
 		if (t_b == 0) { table_b = 0;  update_table_b();}
 		else { table_b= t_b->new_copy(); }
 		order = new std::vector<int>;
-		c_g = Control_generator(b_len)
+		c_g = new Control_generator(b_len);
 	}
 	~QCSynthesizer() {
 		delete table_f, table_b, table_h;
 		delete out_f, out_b;
 		delete order;
-		delete c_g
+		delete c_g;
 	}
 	int hamming_cost() {
 		if (table_h == 0) { update_table_h(); }
@@ -62,10 +62,10 @@ private:
 	QCircuit* gate_syns(int i_b, int f_b, char typ, bool cont_m, char c_typ);
 	QCircuit* gate_syns_simp(int i_b, int f_b);
 	QCircuit* select_b_f(int targ, bool cont_m, char c_typ);
-	QCircuit* BFS(std::unordered_set<int>* candi, bool cont_m, char direction, char c_typ);
-	QCircuit* DFS(std::unordered_set<int>* candi, bool cont_m, char direction, char c_typ);
-	QCircuit* Dym(std::unordered_set<int>* candi, bool cont_m, char direction, char c_typ);
-	QCircuit* DymDFS(std::unordered_set<int>* candi, bool cont_m, char direction, char c_typ);
+	QCircuit* BFS(Control_lines* candi, bool cont_m, char direction, char c_typ);
+	QCircuit* DFS(Control_lines* candi, bool cont_m, char direction, char c_typ);
+	QCircuit* Dym(Control_lines* candi, bool cont_m, char direction, char c_typ);
+	QCircuit* DymDFS(Control_lines* candi, bool cont_m, char direction, char c_typ);
 	void update_table_b();
 	void update_table_f();
 	void update_table_h();
@@ -84,7 +84,7 @@ private:
 	QCircuit* out_f;
 	QCircuit* out_b;
 	std::vector<int>* order;
-	Control_generator* c_g
+	Control_generator* c_g;
 };
 /*
 int main() {

@@ -72,6 +72,7 @@ public:
 	std::set<int>* min_group() { return lib[mn]; };
 	std::set<int>* get_group(int key) { return lib[key]; };
 	int get_max() { return mx; }
+	bool empty() { return begin() == end(); }
 
 protected:
 	void add(int line, int b_num = -1); //the real private add
