@@ -46,12 +46,12 @@ public:
 			return *iter; }
 		virtual int first() { return 0; }
 		virtual std::vector<int>* second() { return 0; }
-		int iterid; //for testing
+		//int iterid; //for testing
 	protected:
 		Control_lines* origin;
 		std::set<int>::iterator iter;
 		std::set<int>::iterator end;
-		//int iterid; //the real one
+		int iterid; //the real one
 		int mx;
 	};
 	iterator begin() {

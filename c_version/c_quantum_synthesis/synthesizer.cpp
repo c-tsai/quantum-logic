@@ -79,8 +79,8 @@ QCircuit* QCSynthesizer::gate_syns(int i_b, int f_b, char typ, bool cont_m, char
 				}
 			}if (cost_h == 0 or cost_q == 0) { break; } point = point << 1; //std::cout << "end a bit" << std::endl;
 		} delete res;//std::cout << "result address" << '*' << std::endl;
-		res = res_sub; b = res->inf(i_b); 
-	}return res;
+		res = res_sub; b = res->inf(i_b);
+	}/*std::cout << res << std::endl;*/ return res;
 }
 QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
 	QCircuit* res = new QCircuit();
@@ -250,7 +250,7 @@ void QCSynthesizer::update_table_h() {
 		table_h->set_value(i->first, Hamming_Dist(i->first,i->second,b_len));}
 }
 void QCSynthesizer::traverse(int targ) {
-	//c_g.remove(targ);
+	c_g->remove(targ);
 	order->push_back(targ);
 	table_b->traverse_pop(targ);
 	table_f->traverse_pop(targ);
@@ -268,9 +268,13 @@ void QCSynthesizer::given_order_alg(int* ord, int len, bool cont_m, char directi
 }
 void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_typ) {
 	QCircuit* c_temp = 0;
+	//std::cout << "table_f: " << table_f << std::endl;
+	//std::cout << "table_b: " << table_b << std::endl;
 	//std::cout << "started" << std::endl;
 	if (direction == 'b') { c_temp = select_b_f(0, cont_m, c_typ); }
 	else { c_temp = gate_syns(table_f->get_value(0), 0, 'f', cont_m, c_typ); }
+	//std::cout << c_temp->get_targ() << "------" << std::endl;
+	//std::cout << c_temp << std::endl;
 	//std::cout << "generated circuit" << std::endl;
 	add(c_temp, c_temp->get_typ());
 	delete c_temp;
@@ -280,6 +284,8 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	t_map->traverse(0, c_g);
 	bool conti = true;
 	//int count = 0;
+	//std::cout << "table_f: " << table_f << std::endl;
+	//std::cout << "table_b: " << table_b << std::endl;
 	while (!(t_map->available()->empty()) && conti ) {
 		QCircuit* cir = 0;
 		//count++;
@@ -290,6 +296,9 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 		case(3):cir = DymDFS(t_map->available(), cont_m, direction, c_typ); break;
 		}
 		//std::cout << cir->get_targ() << std::endl;
+		//std::cout << cir << std::endl;
+		//std::cout << "table_f: " << table_f << std::endl;
+		//std::cout << "table_b: " << table_b << std::endl;
 		add(cir, cir->get_typ());
 		traverse(cir->get_targ());
 		int targ = cir->get_targ();
