@@ -1,0 +1,272 @@
+cm152.pla
+GBD
+nLevel= 8686 QCost= 2418858 time= 4.56
+qGBD
+nLevel= 8611 QCost= 442715 time= 6.69
+
+cm1522.pla
+GBD
+nLevel= 175 QCost= 8299 time= 0
+qGBD
+nLevel= 127 QCost= 1507 time= 0
+
+ex5p.pla
+GBD
+nLevel= 4151 QCost= 35573432 time= 0.47
+qGBD
+nLevel= 4831 QCost= 16987 time= 0.54
+
+paper.pla
+GBD
+nLevel= 5 QCost= 17 time= 0
+qGBD
+nLevel= 3 QCost= 3 time= 0
+
+test.pla
+GBD
+nLevel= 5 QCost= 89 time= 0
+qGBD
+nLevel= 5 QCost= 37 time= 0
+
+add6.pla
+GBD
+nLevel= 23822 QCost= 17970690 time= 22.64
+qGBD
+nLevel= 20705 QCost= 1291393 time= 32.41
+
+alu1.pla
+GBD
+nLevel= 33760 QCost= 111977660 time= 34.35
+qGBD
+nLevel= 36145 QCost= 1083561 time= 54.71
+
+alu2.pla
+GBD
+nLevel= 6636 QCost= 4341744 time= 1.51
+qGBD
+nLevel= 6400 QCost= 121312 time= 2.07
+
+alu3.pla
+GBD
+nLevel= 6104 QCost= 3796104 time= 1.32
+qGBD
+nLevel= 6961 QCost= 122217 time= 2.29
+
+apex4.pla
+GBD
+nLevel= 3446 QCost= 5585250 time= 0.42
+qGBD
+nLevel= 5447 QCost= 41559 time= 0.91
+
+apla.pla
+GBD
+nLevel= 8444 QCost= 48312068 time= 2.05
+qGBD
+nLevel= 10660 QCost= 124692 time= 3.68
+
+cm152a.pla
+GBD
+nLevel= 8686 QCost= 2418858 time= 4.53
+qGBD
+nLevel= 8611 QCost= 442715 time= 6.68
+
+cm85a.pla
+GBD
+nLevel= 9197 QCost= 6188289 time= 3.33
+qGBD
+nLevel= 9733 QCost= 410013 time= 6.26
+
+dk17.pla
+GBD
+nLevel= 7936 QCost= 19178348 time= 1.9
+qGBD
+nLevel= 9070 QCost= 123130 time= 3.08
+
+dk27.pla
+GBD
+nLevel= 1203 QCost= 1042983 time= 0.13
+qGBD
+nLevel= 816 QCost= 9804 time= 0.14
+
+ex1010.pla
+GBD
+nLevel= 7808 QCost= 17194960 time= 1.84
+qGBD
+nLevel= 9044 QCost= 123128 time= 3.07
+
+
+
+-----------------------------------------------
+
+
+cm152.pla
+DFS_length length: 8584 qcost(NCV-111): 1280188 time: 2.44 (sec)
+DFS_length_cont length: 8518 qcost(NCV-111): 476266 time: 118.6 (sec)
+DFS_QCost length: 9222 qcost(NCV-111): 1066902 time: 2.65 (sec)
+DFS_QCost_cont length: 9566 qcost(NCV-111): 410050 time: 116.62 (sec)
+DymDFS_length length: 8404 qcost(NCV-111): 1268996 time: 9.69 (sec)
+DymDFS_length_cont length: 7920 qcost(NCV-111): 461676 time: 280.29 (sec)
+DymDFS_QCost length: 9051 qcost(NCV-111): 1036535 time: 10.19 (sec)
+DymDFS_QCost_cont length: 8825 qcost(NCV-111): 398189 time: 268.14 (sec)
+
+
+cm1522.pla
+DFS_length length: 147 qcost(NCV-111): 2767 time: 0 (sec)
+DFS_length_cont length: 111 qcost(NCV-111): 1243 time: 0.02 (sec)
+DFS_QCost length: 168 qcost(NCV-111): 4948 time: 0 (sec)
+DFS_QCost_cont length: 136 qcost(NCV-111): 1424 time: 0.02 (sec)
+DymDFS_length length: 152 qcost(NCV-111): 3548 time: 0 (sec)
+DymDFS_length_cont length: 129 qcost(NCV-111): 1025 time: 0.05 (sec)
+DymDFS_QCost length: 154 qcost(NCV-111): 3066 time: 0 (sec)
+DymDFS_QCost_cont length: 147 qcost(NCV-111): 1235 time: 0.06 (sec)
+ 
+
+paper.pla
+DFS_length length: 3 qcost(NCV-111): 3 time: 0 (sec)
+DFS_length_cont length: 3 qcost(NCV-111): 3 time: 0 (sec)
+DFS_QCost length: 3 qcost(NCV-111): 3 time: 0 (sec)
+DFS_QCost_cont length: 3 qcost(NCV-111): 3 time: 0 (sec)
+DymDFS_length length: 3 qcost(NCV-111): 3 time: 0 (sec)
+DymDFS_length_cont length: 3 qcost(NCV-111): 3 time: 0 (sec)
+DymDFS_QCost length: 3 qcost(NCV-111): 3 time: 0 (sec)
+DymDFS_QCost_cont length: 3 qcost(NCV-111): 3 time: 0 (sec)
+
+
+test.pla
+DFS_length length: 4 qcost(NCV-111): 52 time: 0 (sec)
+DFS_length_cont length: 5 qcost(NCV-111): 37 time: 0 (sec)
+DFS_QCost length: 4 qcost(NCV-111): 52 time: 0 (sec)
+DFS_QCost_cont length: 5 qcost(NCV-111): 37 time: 0 (sec)
+DymDFS_length length: 5 qcost(NCV-111): 49 time: 0 (sec)
+DymDFS_length_cont length: 5 qcost(NCV-111): 41 time: 0 (sec)
+DymDFS_QCost length: 5 qcost(NCV-111): 49 time: 0 (sec)
+DymDFS_QCost_cont length: 5 qcost(NCV-111): 41 time: 0 (sec)
+
+
+add6.pla
+DFS_length length: 23897 qcost(NCV-111): 6118685 time: 9.58 (sec)
+DFS_length_cont length: 22031 qcost(NCV-111): 1329811 time: 362.84 (sec)
+DFS_QCost length: 24587 qcost(NCV-111): 5956851 time: 10.06 (sec)
+DFS_QCost_cont length: 23147 qcost(NCV-111): 1073959 time: 347.66 (sec)
+DymDFS_length length: 23914 qcost(NCV-111): 5985714 time: 38.8 (sec)
+DymDFS_length_cont length: 21369 qcost(NCV-111): 1343793 time: 939.5 (sec)
+DymDFS_QCost length: 22716 qcost(NCV-111): 5369392 time: 38.57 (sec)
+DymDFS_QCost_cont length: 22505 qcost(NCV-111): 1082905 time: 952.52 (sec)
+
+
+alu1.pla
+DFS_length length: 34315 qcost(NCV-111): 26484039 time: 8.99 (sec)
+DFS_length_cont length: 35502 qcost(NCV-111): 1223806 time: 1311.74 (sec)
+DFS_QCost length: 34678 qcost(NCV-111): 29392534 time: 9.04 (sec)
+DFS_QCost_cont length: 35601 qcost(NCV-111): 1082445 time: 1380.19 (sec)
+DymDFS_length length: 33748 qcost(NCV-111): 30581812 time: 62.78 (sec)
+DymDFS_length_cont length: 31760 qcost(NCV-111): 1244156 time: 2684.09 (sec)
+DymDFS_QCost length: 34293 qcost(NCV-111): 29330989 time: 61.07 (sec)
+DymDFS_QCost_cont length: 32030 qcost(NCV-111): 1077038 time: 2643.11 (sec)
+
+
+
+alu2.pla
+DFS_length length: 6594 qcost(NCV-111): 1284818 time: 0.5 (sec)
+DFS_length_cont length: 5724 qcost(NCV-111): 140224 time: 22.01 (sec)
+DFS_QCost length: 6550 qcost(NCV-111): 1287442 time: 0.47 (sec)
+DFS_QCost_cont length: 5875 qcost(NCV-111): 120655 time: 23.21 (sec)
+DymDFS_length length: 6373 qcost(NCV-111): 1691933 time: 4.52 (sec)
+DymDFS_length_cont length: 6071 qcost(NCV-111): 141123 time: 69.44 (sec)
+DymDFS_QCost length: 6474 qcost(NCV-111): 1122822 time: 2.09 (sec)
+DymDFS_QCost_cont length: 6206 qcost(NCV-111): 120514 time: 68.85 (sec)
+
+
+alu3.pla
+DFS_length length: 6099 qcost(NCV-111): 1109827 time: 0.49 (sec)
+DFS_length_cont length: 6475 qcost(NCV-111): 142307 time: 29.57 (sec)
+DFS_QCost length: 6294 qcost(NCV-111): 1211306 time: 0.48 (sec)
+DFS_QCost_cont length: 6447 qcost(NCV-111): 120647 time: 29.13 (sec)
+DymDFS_length length: 5947 qcost(NCV-111): 1134735 time: 1.9 (sec)
+DymDFS_length_cont length: 5770 qcost(NCV-111): 141706 time: 57.77 (sec)
+DymDFS_QCost length: 6063 qcost(NCV-111): 1160595 time: 1.9 (sec)
+DymDFS_QCost_cont length: 5867 qcost(NCV-111): 118731 time: 61.47 (sec)
+
+
+apex4.pla
+DFS_length length: 4420 qcost(NCV-111): 12941416 time: 0.17 (sec)
+DFS_length_cont length: 4846 qcost(NCV-111): 42510 time: 44.24 (sec)
+DFS_QCost length: 4420 qcost(NCV-111): 12941416 time: 0.17 (sec)
+DFS_QCost_cont length: 4836 qcost(NCV-111): 40944 time: 43.3 (sec)
+DymDFS_length length: 4398 qcost(NCV-111): 17293986 time: 0.49 (sec)
+DymDFS_length_cont length: 4617 qcost(NCV-111): 42217 time: 90.8 (sec)
+DymDFS_QCost length: 4438 qcost(NCV-111): 18833602 time: 0.5 (sec)
+DymDFS_QCost_cont length: 4527 qcost(NCV-111): 40639 time: 87.75 (sec)
+
+
+apla.pla
+DFS_length length: 9731 qcost(NCV-111): 16496775 time: 0.57 (sec)
+DFS_length_cont length: 9400 qcost(NCV-111): 130936 time: 119.99 (sec)
+DFS_QCost length: 10035 qcost(NCV-111): 20104007 time: 0.57 (sec)
+DFS_QCost_cont length: 9137 qcost(NCV-111): 123109 time: 98.81 (sec)
+DymDFS_length length: 9383 qcost(NCV-111): 15686139 time: 2.53 (sec)
+DymDFS_length_cont length: 8779 qcost(NCV-111): 131587 time: 256.87 (sec)
+DymDFS_QCost length: 9315 qcost(NCV-111): 16188211 time: 2.42 (sec)
+DymDFS_QCost_cont length: 8569 qcost(NCV-111): 122441 time: 228.03 (sec)
+
+
+cm152a.pla
+DFS_length length: 8584 qcost(NCV-111): 1280188 time: 2.47 (sec)
+DFS_length_cont length: 8518 qcost(NCV-111): 476266 time: 120.68 (sec)
+DFS_QCost length: 9222 qcost(NCV-111): 1066902 time: 2.68 (sec)
+DFS_QCost_cont length: 9566 qcost(NCV-111): 410050 time: 118.56 (sec)
+DymDFS_length length: 8404 qcost(NCV-111): 1268996 time: 9.56 (sec)
+DymDFS_length_cont length: 7920 qcost(NCV-111): 461676 time: 271.85 (sec)
+DymDFS_QCost length: 9051 qcost(NCV-111): 1036535 time: 10 (sec)
+DymDFS_QCost_cont length: 8825 qcost(NCV-111): 398189 time: 257.4 (sec)
+
+
+cm85a.pla
+DFS_length length: 9416 qcost(NCV-111): 2097752 time: 1.87 (sec)
+DFS_length_cont length: 8906 qcost(NCV-111): 389974 time: 48.82 (sec)
+DFS_QCost length: 9621 qcost(NCV-111): 2100585 time: 1.9 (sec)
+DFS_QCost_cont length: 8765 qcost(NCV-111): 319021 time: 37.81 (sec)
+DymDFS_length length: 9408 qcost(NCV-111): 2102304 time: 6.83 (sec)
+DymDFS_length_cont length: 8681 qcost(NCV-111): 394457 time: 109.08 (sec)
+DymDFS_QCost length: 9517 qcost(NCV-111): 1970313 time: 6.99 (sec)
+DymDFS_QCost_cont length: 8081 qcost(NCV-111): 306021 time: 85.35 (sec)
+
+
+dk17.pla
+DFS_length length: 8868 qcost(NCV-111): 7228456 time: 0.53 (sec)
+DFS_length_cont length: 8379 qcost(NCV-111): 135247 time: 80.06 (sec)
+DFS_QCost length: 8752 qcost(NCV-111): 6753252 time: 0.52 (sec)
+DFS_QCost_cont length: 8272 qcost(NCV-111): 122256 time: 76.14 (sec)
+DymDFS_length length: 8516 qcost(NCV-111): 7583612 time: 2.95 (sec)
+DymDFS_length_cont length: 7746 qcost(NCV-111): 136238 time: 158.5 (sec)
+DymDFS_QCost length: 8290 qcost(NCV-111): 6865934 time: 2.21 (sec)
+DymDFS_QCost_cont length: 7518 qcost(NCV-111): 121426 time: 133.16 (sec)
+
+
+dk27.pla
+DFS_length length: 1531 qcost(NCV-111): 368815 time: 0.12 (sec)
+DFS_length_cont length: 875 qcost(NCV-111): 12639 time: 1.33 (sec)
+DFS_QCost length: 1628 qcost(NCV-111): 341300 time: 0.12 (sec)
+DFS_QCost_cont length: 886 qcost(NCV-111): 11878 time: 1.28 (sec)
+DymDFS_length length: 1314 qcost(NCV-111): 423366 time: 0.34 (sec)
+DymDFS_length_cont length: 493 qcost(NCV-111): 9609 time: 1.59 (sec)
+DymDFS_QCost length: 1236 qcost(NCV-111): 390344 time: 0.33 (sec)
+DymDFS_QCost_cont length: 445 qcost(NCV-111): 8273 time: 1.47 (sec)
+
+
+ex1010.pla
+DFS_length length: 8237 qcost(NCV-111): 4842377 time: 0.51 (sec)
+DFS_length_cont length: 8642 qcost(NCV-111): 135310 time: 90.93 (sec)
+DFS_QCost length: 8289 qcost(NCV-111): 4719993 time: 0.52 (sec)
+DFS_QCost_cont length: 8743 qcost(NCV-111): 122747 time: 94.64 (sec)
+DymDFS_length length: 8188 qcost(NCV-111): 7833440 time: 19.32 (sec)
+DymDFS_length_cont length: 8012 qcost(NCV-111): 137284 time: 183.39 (sec)
+DymDFS_QCost length: 8091 qcost(NCV-111): 4198223 time: 2.22 (sec)
+DymDFS_QCost_cont length: 8123 qcost(NCV-111): 122127 time: 195.29 (sec)
+
+
+parity.pla
+DFS_length length: 239293 qcost(NCV-111): 365129189 time: 5641.18 (sec)
+DFS_length_cont length: 30 qcost(NCV-111): 30 time: 2886.79 (sec)
+DFS_QCost length: 198 qcost(NCV-111): 1066 time: 2840.67 (sec)
+DFS_QCost_cont length: 30 qcost(NCV-111): 30 time: 2992.69 (sec)
