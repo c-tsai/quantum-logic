@@ -153,7 +153,7 @@ QCircuit* QCSynthesizer::DFS(Control_lines* candi, bool cont_m, char direction, 
 	return c;
 }
 QCircuit* QCSynthesizer::Dym(Control_lines* candi, bool cont_m, char direction, char c_typ) {
-	int cost = INT16_MAX; QCircuit* c = 0; int h = INT16_MAX; 
+	int cost = INT32_MAX; QCircuit* c = 0; int h = INT32_MAX; 
 	bool fin = false; int targ_u = -1;
 	for (auto i = candi->begin(); i != candi->end(); i++) {
 		int t = i.element();
@@ -183,12 +183,12 @@ QCircuit* QCSynthesizer::Dym(Control_lines* candi, bool cont_m, char direction, 
 	}return c;
 }
 QCircuit* QCSynthesizer::DymDFS(Control_lines* candi, bool cont_m, char direction, char c_typ) {
-	int cost = INT16_MAX; QCircuit* c = 0; int h = INT16_MAX;
+	int cost = INT32_MAX; QCircuit* c = 0; int h = INT32_MAX;
 	bool fin = false; int targ_u = -1;
 	//std::cout << '{' << std::endl;
 	for (auto i = candi->max_group()->begin(); i != candi->max_group()->end(); i++) {
 		int t = *i;
-		//std::cout << t ;
+		//std::cout << t << std::endl;
 		if (table_b->get_value(t) == -1 && table_f->get_value(t) == -1) {
 			//std::cout << "--not specified terms" << std::endl;
 			targ_u = t; continue; }
@@ -219,7 +219,7 @@ QCircuit* QCSynthesizer::DymDFS(Control_lines* candi, bool cont_m, char directio
 			if (cost == 0) { break; }
 		}
 		else { 
-			/*std::cout << "--a term nothing special " << cost_temp << ' ' << INT8_MAX <<std::endl;*/ delete c_temp; }
+			/*std::cout << "--a term nothing special " << cost_temp << ' ' << cost <<std::endl; */delete c_temp; }
 	}
 	if (c == 0) {
 		c = gate_syns(table_f->get_value(targ_u), targ_u, 'f', cont_m, c_typ);
@@ -289,13 +289,16 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	while (!(t_map->available()->empty()) && conti ) {
 		QCircuit* cir = 0;
 		//count++;
+		/*std::cout << '{' ;
+		for(auto i = t_map->available()->begin(); i!=t_map->available()->end();i++){std::cout << i.element() << ',';}
+		std::cout << '}' << std::endl;*/
 		switch (alg) {
 		case(0):cir = DFS(t_map->available(), cont_m, direction, c_typ); break;
 		case(1):cir = BFS(t_map->available(), cont_m, direction, c_typ); break;
 		case(2):cir = Dym(t_map->available(), cont_m, direction, c_typ); break;
 		case(3):cir = DymDFS(t_map->available(), cont_m, direction, c_typ); break;
 		}
-		//std::cout << cir->get_targ() << std::endl;
+		//std::cout <<"result: " << cir->get_targ() << std::endl;
 		//std::cout << cir << std::endl;
 		//std::cout << "table_f: " << table_f << std::endl;
 		//std::cout << "table_b: " << table_b << std::endl;

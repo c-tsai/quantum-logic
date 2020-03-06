@@ -14,6 +14,7 @@
 
 int main(int argc, char** argv) {
 	Table* t = pla_reader((argv[1]));
+	//std::cout << t << std::endl;
 	switch (std::stoi((argv[2])))
 	{
 	case(0):std::cout << "DFS"; break;
@@ -48,6 +49,7 @@ int main(int argc, char** argv) {
 	int c = 0;
 	//std::cout << "complete" << std::endl;
 	for (auto i = t->begin(); i != t->end(); i++) { 
+		//std::cout << i->first << std::endl;
 		if (qc->inf(i->first) != i->second) {
 			std::cout << qc << std::endl;
 			std::cout << "wrong result( need " << i->second << " for " << i->first << " but got " << qc->inf(i->first) << " instead)"; 

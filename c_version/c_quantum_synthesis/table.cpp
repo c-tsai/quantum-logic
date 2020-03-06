@@ -22,17 +22,21 @@ std::vector<int>* bit_list(int targ, int bit_len) {
 	return result;
 }
 Table* pla_reader(const std::string file_name) {
-	std::ifstream file;
-	file.open(file_name);
+	std::ifstream file(file_name);
 	int b_len, b;
 	file >> b_len >> b;
+	//std::cout << file.is_open() << std::endl;
 	Table* res_p = new Table(b_len);
 	std::string in_s, out_s;
+	//std::cout << b_len << std::endl;
 	while (file >> in_s >> out_s) {
+		//std::cout << in_s << out_s << std::endl;
 		int in_int = std::stoi(in_s, 0, 2);
 		int out_int = std::stoi(out_s, 0, 2);
 		res_p->set_value(in_int, out_int);
+		//std::cout << in_s << out_s << std::endl;
 	}
+        file.close();
 	return res_p;
 }
 int Hamming_Dist(int bit1, int bit2, int b_len) {
