@@ -1,9 +1,7 @@
 #include <algorithm>
 #include "table.h"
 #include "gates.h"
-
-
-int TofoliGate::inf(int bit) {
+long int TofoliGate::inf(long int bit) {
 	//std::cout << bit<< 't' << endl;
 	if (bit == -1) { return -1; }
 	if ((bit&get_bit1()) == get_bit1()) { return bit^get_bit2(); }
@@ -17,17 +15,17 @@ int TofoliGate::control_num() {
 	return cont_n;
 }
 
-int SwapGate::inf(int bit) {
+long int SwapGate::inf(long int bit) {
 	//std::cout << bit<< 's' << endl;
 	if (bit == -1) { return -1; }
-	int b = (bit | get_bit1() |get_bit2());
+	long int b = (bit | get_bit1() |get_bit2());
 	if ((bit&get_bit1()) == 0) { return b -= get_bit2(); }
 	if ((bit&get_bit2()) == 0) { return b -= get_bit1(); }
 	return b;
 }
 
-int QCircuit::inf(int bit) {
-	int i = bit;
+long int QCircuit::inf(long int bit) {
+	long int i = bit;
 	for (auto it = q_vec->begin(); it != q_vec->end(); it++) {
 		i = (*it)->inf(i);
 	}

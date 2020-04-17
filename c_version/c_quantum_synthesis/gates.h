@@ -6,10 +6,10 @@
 //remember to check if dict could be implement into an array
 class Gate {
 public:
-	Gate(int b1, int b2, int len) :length(len), bit1(b1), bit2(b2){}
-	virtual int inf(int bit) { return -1; }
-	int get_bit1() { return bit1; }
-	int get_bit2() { return bit2; }
+	Gate(long int b1, long int b2, int len) :length(len), bit1(b1), bit2(b2){}
+	virtual long int inf(long int bit) { return -1; }
+	long int get_bit1() { return bit1; }
+	long int get_bit2() { return bit2; }
 	int get_length() { return length; }
 	virtual int control_num() { return 0; }
 	virtual char bit1_symb() { return 0; }
@@ -17,14 +17,14 @@ public:
 	
 private:
 	int length;
-	int bit1;
-	int bit2;
+	long int bit1;
+	long int bit2;
 };
 
 class TofoliGate: public Gate {
 public:
-	TofoliGate(int control, int invert, int len) : Gate(control, invert, len) { cont_n = -1; }
-	int inf(int bit) ;
+	TofoliGate(long int control, long int invert, int len) : Gate(control, invert, len) { cont_n = -1; }
+	long int inf(long int bit) ;
 	int control_num();
 	char bit1_symb() { return '.'; }
 	char bit2_symb() { return '+'; }
@@ -34,8 +34,8 @@ private:
 
 class SwapGate : public Gate {
 public:
-	SwapGate(int swap1, int swap2, int len) : Gate(swap1, swap2, len) {}
-	int inf(int bit);
+	SwapGate(long int swap1, long int swap2, int len) : Gate(swap1, swap2, len) {}
+	long int inf(long int bit);
 	char bit1_symb() { return 's'; }
 	char bit2_symb() { return 's'; }
 };
@@ -65,30 +65,33 @@ public:
 	std::vector<Gate*>::reverse_iterator vec_rend() { return q_vec->rend(); }
 	std::unordered_map<int, int>::iterator dict_begin() { return dict->begin(); }
 	std::unordered_map<int, int>::iterator dict_end() { return dict->end(); }
-	int inf(int bit);
+	long int inf(long int bit);
+	long int get_targ() { return targ; }
 	int size() { return q_vec->size(); }
+	int cost(char c_typ);
 	void add(QCircuit* q_cir, char typ);
 	void set_typ(char c) { typ = c; }
-	void set_targ(int t) { targ = t; }
+	void set_targ(long int t) { targ = t; }
 	char get_typ() { return typ; }
-	int get_targ() { return targ; }
-	int cost(char c_typ);
+
 
 private:
 	std::vector<Gate*>* q_vec;
 	std::unordered_map<int, int>* dict;
 	char typ;
-	int targ;
+	long int targ;
 
 };
 
 inline std::ostream &operator<<(std::ostream &os, Gate* g) {
 	os << "--";
-	int c = g->get_bit1(); int inv = g->get_bit2();
+	long int c = g->get_bit1(); long int inv = g->get_bit2();
+	//os << std::endl;
 	for (int i = 0; i < g->get_length(); i++) {
 		if (c % 2 == 1) { os << g->bit1_symb() << "--"; }
 		else if (inv % 2 == 1) { os << g->bit2_symb() << "--"; }
 		else { os << "---"; }
+		//os << i << std::endl;
 		c = c / 2; inv = inv / 2;
 	}
 	os << std::endl << "--";
@@ -97,8 +100,10 @@ inline std::ostream &operator<<(std::ostream &os, Gate* g) {
 }
 
 inline std::ostream &operator<<(std::ostream &os, QCircuit* c) { 
+	//int count =0;
 	for (auto it = c->vec_begin(); it != c->vec_end(); it++)
-		{ os << (*it) << std::endl; }return os;}
+		{//os << count << "***********"<< std::endl; 
+		 os << (*it) << std::endl; }return os;}
  
 /*
 int main() {

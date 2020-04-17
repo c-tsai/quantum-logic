@@ -4,6 +4,16 @@
 #include <iostream>
 
 
+
+std::vector<long int>* QCSynthesizer::prefered_cont_order(long int targ){
+	std::vector<long int>* res = bit_list(targ, b_len);
+	for(int i=0; i<res->size(); i++){
+		for(int j=i; j<res->size(); j++){
+			if(prefered_cont->find(res->at(i))->second< prefered_cont->find(res->at(j))->second){
+				std::iter_swap(res->begin()+i,res->begin()+j);}}}
+	return res;
+}
+
 void QCSynthesizer::add(QCircuit* cir, char typ, Table* t_b, Table* t_f, Table* t_h) {
 	//std::cout << typ;
 	if (t_f != 0) { table_f = t_f->new_copy(); }
@@ -28,7 +38,7 @@ void QCSynthesizer::add(QCircuit* cir, char typ, Table* t_b, Table* t_f, Table* 
 	if (t_h != 0) { table_h = t_h->new_copy(); }
 	else { update_table_h(); }
 }
-void QCSynthesizer::algorithm_selector(int alg, int* ord, bool cont_m, char direction, char c_typ) {
+void QCSynthesizer::algorithm_selector(int alg, long int* ord, bool cont_m, char direction, char c_typ) {
 	switch (alg)
 	{
 	case(-1):given_order_alg(ord, length, cont_m, direction, c_typ); break;
@@ -38,22 +48,23 @@ void QCSynthesizer::algorithm_selector(int alg, int* ord, bool cont_m, char dire
 	case(3):dynamic_proto(3, cont_m, direction, c_typ); break;
 	}
 }
-QCircuit* QCSynthesizer::gate_syns(int i_b, int f_b, char typ, bool cont_m, char c_typ) {
+QCircuit* QCSynthesizer::gate_syns(long int i_b, long int f_b, char typ, bool cont_m, char c_typ) {
 	//std::cout << typ<< " target_bit " << f_b << std::endl;
 	if (!cont_m) { QCircuit* c = gate_syns_simp(i_b, f_b); c->set_typ(typ); return c; }
+	else{ QCircuit* c = gate_syns_simp_cont(i_b, f_b); c->set_typ(typ); return c; }
 	//std::cout << "starting" << std::endl; 
-	QCircuit* res = new QCircuit(); int b = i_b;
+	QCircuit* res = new QCircuit(); long int b = i_b;
 	if ((i_b == -1) || (f_b == -1)) { return res; }
 	//std::cout << "starting" << std::endl;
 	while (b != f_b) {
-		int diff = (b ^ f_b); int point = 1; int cost_q = INT16_MAX; int cost_h = INT16_MAX;
+		long int diff = (b ^ f_b); long int point = 1; int cost_q = INT16_MAX; int cost_h = INT16_MAX;
 		//std::cout << "current bit: " << b << " target bit: " << f_b << " diff: " << diff << std::endl;
 		QCircuit* res_sub = 0;
 		for (int i = 0; i < b_len; i++) {
 			//std::cout << point << "----------" << std::endl;
 			if ((diff & point) != 0) {
 				//std::cout << "start a none zero point" << std::endl;
-				std::vector<int>* lib = c_g->best_clines(b, point);
+				std::vector<long int>* lib = c_g->best_clines(b, point);
 				for (auto it = lib->begin(); it != lib->end(); it++) {
 					//std::cout << *it << std::endl;
 					Gate* q = new TofoliGate(*it, point, b_len);
@@ -82,15 +93,15 @@ QCircuit* QCSynthesizer::gate_syns(int i_b, int f_b, char typ, bool cont_m, char
 		res = res_sub; b = res->inf(i_b);
 	}/*std::cout << res << std::endl;*/ return res;
 }
-QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
+QCircuit* QCSynthesizer::gate_syns_simp(long int i_b, long int f_b) {
 	QCircuit* res = new QCircuit();
 	if (i_b == -1 | f_b == -1) { return res; }
 
 	//std::cout << i_b << ' ' << f_b  << std::endl;
 	//std::cout << table_f << std::endl;
-	int diff_1 = (i_b ^ f_b) & i_b;
-	int diff_0 = (i_b ^ f_b) & f_b;
-	int point = 1;
+	long int diff_1 = (i_b ^ f_b) & i_b;
+	long int diff_0 = (i_b ^ f_b) & f_b;
+	long int point = 1;
 	for (int i = 0; i != b_len; i++) {
 		//std::cout << point << std::endl;
 		if ((diff_0 & point) != 0) {
@@ -115,7 +126,82 @@ QCircuit* QCSynthesizer::gate_syns_simp(int i_b, int f_b) {
 	return res;
 }
 
-QCircuit* QCSynthesizer::select_b_f(int targ, bool cont_m, char c_typ) {
+QCircuit* QCSynthesizer::gate_syns_simp_cont(long int i_b, long int f_b) {
+	QCircuit* res = new QCircuit();
+	if (i_b == -1 | f_b == -1) { return res; }
+	//std::cout << i_b << ' ' << f_b  << std::endl;
+	//std::cout << table_f << std::endl;
+	long int diff_1 = (i_b ^ f_b) & i_b;
+	long int diff_0 = (i_b ^ f_b) & f_b;
+	long int point = 1;
+	std::vector<long int>* cand0 = prefered_cont_order(i_b);
+	std::vector<long int>* cand1 = prefered_cont_order(i_b+diff_0-diff_1);
+	for (int i = 0; i != b_len; i++) {
+		//std::cout << point << std::endl;
+		if ((diff_0 & point) != 0) {
+			long int cont_fin= 0;
+			Gate* t = new TofoliGate(cont_fin, point, b_len); 
+			std::vector < Gate* >* t_vec= new std::vector<Gate*>;
+			t_vec->push_back(t);
+			QCircuit* t_cir = new QCircuit(t_vec);
+			if(!check(t_cir)){
+				delete t, t_vec, t_cir;
+				for(auto i=cand0->begin();i!=cand0->end();i++){
+					//std::cout << cont_fin << std::endl;
+					cont_fin += *i;
+					Gate* t_temp = new TofoliGate(cont_fin, point, b_len); 
+					std::vector < Gate* >* t_vec_temp = new std::vector<Gate*>;
+					t_vec_temp->push_back(t_temp);
+					t_cir = new QCircuit(t_vec_temp);
+					if(check(t_cir)){break;}
+					//std::cout << t_cir<< std::endl;
+					delete t_temp, t_vec_temp, t_cir;
+				}
+			}
+			res->add(t_cir, 'f');
+		}point = point << 1;
+	}point = 1;
+	for (int i = 0; i != b_len; i++) {
+		//std::cout << point << std::endl;
+		if ((diff_1 & point) != 0) {
+			long int cont_fin= 0;
+			Gate* t = new TofoliGate(cont_fin, point, b_len); 
+			std::vector < Gate* >* t_vec = new std::vector<Gate*>;
+			t_vec->push_back(t);
+			QCircuit* t_cir = new QCircuit(t_vec);
+			if(!check(t_cir)){
+				delete t, t_vec, t_cir;
+				for(auto i=cand1->begin();i!=cand1->end();i++){
+					cont_fin += *i;
+					//std::cout << cont_fin << std::endl;
+					Gate* t_temp = new TofoliGate(cont_fin, point, b_len); 
+					std::vector < Gate* >* t_vec_temp= new std::vector<Gate*>;
+					t_vec_temp->push_back(t_temp);
+					t_cir = new QCircuit(t_vec_temp);
+					if(check(t_cir)){break;}
+					//std::cout << t_cir<< std::endl;
+					delete t_temp, t_vec_temp, t_cir;
+				}
+			}
+			res->add(t_cir, 'f');
+		}point = point << 1;
+	}//std::cout << res << std::endl;
+	delete cand0, cand1;
+	return res;
+}
+
+bool QCSynthesizer::check(QCircuit* q_cir) {
+	//std::cout << '{' ;
+	for(auto i=t_map->traversed_begin(); i!=t_map->traversed_end(); i++){
+		//std::cout << *i << ',';
+		if(q_cir->inf(*i)!=(*i)){ 
+			//std::cout << '}' << std::endl; 
+			 return false;}
+	}//std::cout << '}' << "true" << std::endl; 
+	return true;
+}
+
+QCircuit* QCSynthesizer::select_b_f(long int targ, bool cont_m, char c_typ) {
 	//std::cout << "table_b: " << table_b->get_value(targ) << " table_f: " << table_f->get_value(targ) << std::endl;
 	if ((table_b->get_value(targ)) == -1) {
 		//std::cout << "partial specify " << std::endl;
@@ -136,7 +222,7 @@ QCircuit* QCSynthesizer::select_b_f(int targ, bool cont_m, char c_typ) {
 }
 
 QCircuit* QCSynthesizer::BFS(Control_lines* candi, bool cont_m, char direction, char c_typ) {
-	int targ = *(candi->min_group()->begin());
+	long int targ = *(candi->min_group()->begin());
 	//std::cout << targ << std::endl;
 	QCircuit* c;
 	if (direction == 'b') { c =select_b_f(targ, cont_m, c_typ);}
@@ -145,7 +231,7 @@ QCircuit* QCSynthesizer::BFS(Control_lines* candi, bool cont_m, char direction, 
 	return c;
 }
 QCircuit* QCSynthesizer::DFS(Control_lines* candi, bool cont_m, char direction, char c_typ) {
-	int targ = *(candi->max_group()->begin());
+	long int targ = *(candi->max_group()->begin());
 	QCircuit* c;
 	if (direction == 'b') { c =select_b_f(targ, cont_m, c_typ); }
 	else { c = gate_syns(table_f->get_value(targ), targ, 'f', cont_m, c_typ);  }
@@ -154,9 +240,9 @@ QCircuit* QCSynthesizer::DFS(Control_lines* candi, bool cont_m, char direction, 
 }
 QCircuit* QCSynthesizer::Dym(Control_lines* candi, bool cont_m, char direction, char c_typ) {
 	int cost = INT32_MAX; QCircuit* c = 0; int h = INT32_MAX; 
-	bool fin = false; int targ_u = -1;
+	bool fin = false; long int targ_u = -1;
 	for (auto i = candi->begin(); i != candi->end(); i++) {
-		int t = i.element();
+		long int t = i.element();
 		if (table_b->get_value(t) == -1 && table_f->get_value(t) == -1) { targ_u = t; continue; }
 		QCircuit* c_temp = 0;
 		if (direction == 'b') { c_temp = select_b_f((t), cont_m, c_typ); }
@@ -184,10 +270,10 @@ QCircuit* QCSynthesizer::Dym(Control_lines* candi, bool cont_m, char direction, 
 }
 QCircuit* QCSynthesizer::DymDFS(Control_lines* candi, bool cont_m, char direction, char c_typ) {
 	int cost = INT32_MAX; QCircuit* c = 0; int h = INT32_MAX;
-	bool fin = false; int targ_u = -1;
+	bool fin = false; long int targ_u = -1;
 	//std::cout << '{' << std::endl;
 	for (auto i = candi->max_group()->begin(); i != candi->max_group()->end(); i++) {
-		int t = *i;
+		long int t = *i;
 		//std::cout << t << std::endl;
 		if (table_b->get_value(t) == -1 && table_f->get_value(t) == -1) {
 			//std::cout << "--not specified terms" << std::endl;
@@ -249,14 +335,24 @@ void QCSynthesizer::update_table_h() {
 	for (auto i = table_f->begin(); i != table_f->end(); i++) {
 		table_h->set_value(i->first, Hamming_Dist(i->first,i->second,b_len));}
 }
-void QCSynthesizer::traverse(int targ) {
+void QCSynthesizer::traverse(long int targ) {
 	c_g->remove(targ);
 	order->push_back(targ);
 	table_b->traverse_pop(targ);
 	table_f->traverse_pop(targ);
 	table_h->traverse_pop(targ);
+	long int point=1;
+	for(int i =0; i<b_len; i++){
+		std::cout << targ << ',' << point <<std::endl; 
+		if((targ&point)==0){
+			prefered_cont->find(point)->second = prefered_cont->find(point)->second +1; }
+		point = point << 1;}
+	std::cout << '{';
+	for(auto i=prefered_cont->begin(); i!=prefered_cont->end(); i++){
+		std::cout << i->first << ':' << i->second << ',';
+	} std::cout << '}' << std::endl;
 }
-void QCSynthesizer::given_order_alg(int* ord, int len, bool cont_m, char direction, char c_typ) {
+void QCSynthesizer::given_order_alg(long int* ord, int len, bool cont_m, char direction, char c_typ) {
 	for (int i = 0; i!=len; i++){
 		//std::cout << i << std::endl;
 		QCircuit* c_temp = 0;
@@ -268,9 +364,9 @@ void QCSynthesizer::given_order_alg(int* ord, int len, bool cont_m, char directi
 }
 void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_typ) {
 	QCircuit* c_temp = 0;
-	//std::cout << "table_f: " << table_f << std::endl;
-	//std::cout << "table_b: " << table_b << std::endl;
-	//std::cout << "started" << std::endl;
+	/*std::cout << "table_f: " << table_f << std::endl;
+	std::cout << "table_b: " << table_b << std::endl;
+	std::cout << "started" << std::endl;*/
 	if (direction == 'b') { c_temp = select_b_f(0, cont_m, c_typ); }
 	else { c_temp = gate_syns(table_f->get_value(0), 0, 'f', cont_m, c_typ); }
 	//std::cout << c_temp->get_targ() << "------" << std::endl;
@@ -280,7 +376,6 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	delete c_temp;
 	//std::cout << '1' << std::endl;
 	traverse(0);
-	Map* t_map = new Map(b_len);
 	t_map->traverse(0, c_g);
 	bool conti = true;
 	//int count = 0;
@@ -289,6 +384,7 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	while (!(t_map->available()->empty()) && conti ) {
 		QCircuit* cir = 0;
 		//count++;
+		//std::cout << count << std::endl;
 		/*std::cout << '{' ;
 		for(auto i = t_map->available()->begin(); i!=t_map->available()->end();i++){std::cout << i.element() << ',';}
 		std::cout << '}' << std::endl;*/
@@ -304,7 +400,7 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 		//std::cout << "table_b: " << table_b << std::endl;
 		add(cir, cir->get_typ());
 		traverse(cir->get_targ());
-		int targ = cir->get_targ();
+		long int targ = cir->get_targ();
 		t_map->traverse(targ,c_g,!(table_b->get_value(targ)==-1 && table_f->get_value(targ) == -1));
 		conti = false;
 		delete cir;
@@ -318,4 +414,6 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	}
 	delete t_map;
 }
-void QCSynthesizer::permuting(int alg, int* order, bool cont_m, char direction, char c_typ) {}
+void QCSynthesizer::permuting(int alg, long int* order, bool cont_m, char direction, char c_typ) {}
+
+

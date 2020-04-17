@@ -3,6 +3,7 @@
 #include "traverse_map.h"
 #include <stdexcept>
 #include <unordered_set>
+#include <unordered_map>
 
 
 /*given order=-1;DFS=0; BFS=1; Dym =2; Dym_DFS=3*/
@@ -11,14 +12,21 @@ class QCSynthesizer {
 public:
 	QCSynthesizer(Table* t, int b_l, Table* t_b = 0) {
 		table_f = t->new_copy();
-		length = t->len(); b_len = b_l;
-		out_f = new QCircuit(); out_b = new QCircuit();
+		length = t->len(); 
+		b_len = b_l;
+		out_f = new QCircuit(); 
+		out_b = new QCircuit();
 		table_h = 0;
 		
 		if (t_b == 0) { table_b = 0;  update_table_b();}
 		else { table_b= t_b->new_copy(); }
-		order = new std::vector<int>;
+		order = new std::vector<long int>;
 		c_g = new Control_generator(b_len);
+		t_map= new Map(b_len);
+		prefered_cont= new std::unordered_map<long int, int>;
+		long int point=1;
+		for(int i=0; i<b_len; i++){
+			prefered_cont->insert({point, 0}); point = point << 1;}
 	}
 	~QCSynthesizer() {
 		delete table_f, table_b, table_h;
@@ -35,9 +43,9 @@ public:
 		return res;
 	}
 	void add(QCircuit* cir, char typ, Table* t_b=0, Table* t_f=0, Table* t_h=0);
-	void algorithm_selector(int alg, int* ord, bool cont_m, char direction, char c_typ);
+	void algorithm_selector(int alg, long int* ord, bool cont_m, char direction, char c_typ);
 
-	void order_alg(int* ord, bool permute, bool cont_m, char direction, char c_typ) {
+	void order_alg(long int* ord, bool permute, bool cont_m, char direction, char c_typ) {
 		if (permute) { permuting(-1, ord, cont_m, direction, c_typ); }
 		else { given_order_alg(ord, length, cont_m, direction, c_typ); }
 	}
@@ -59,9 +67,10 @@ public:
 	}
 
 private:
-	QCircuit* gate_syns(int i_b, int f_b, char typ, bool cont_m, char c_typ);
-	QCircuit* gate_syns_simp(int i_b, int f_b);
-	QCircuit* select_b_f(int targ, bool cont_m, char c_typ);
+	QCircuit* gate_syns(long int i_b, long int f_b, char typ, bool cont_m, char c_typ);
+	QCircuit* gate_syns_simp(long int i_b, long int f_b);
+	QCircuit* gate_syns_simp_cont(long int i_b, long int f_b);
+	QCircuit* select_b_f(long int targ, bool cont_m, char c_typ);
 	QCircuit* BFS(Control_lines* candi, bool cont_m, char direction, char c_typ);
 	QCircuit* DFS(Control_lines* candi, bool cont_m, char direction, char c_typ);
 	QCircuit* Dym(Control_lines* candi, bool cont_m, char direction, char c_typ);
@@ -69,10 +78,13 @@ private:
 	void update_table_b();
 	void update_table_f();
 	void update_table_h();
-	void traverse(int targ);
-	void given_order_alg(int* ord, int len, bool cont_m, char direction, char c_typ);
+	void traverse(long int targ);
+	void given_order_alg(long int* ord, int len, bool cont_m, char direction, char c_typ);
 	void dynamic_proto(int alg, bool cont_m, char direction, char c_typ);
-	void permuting(int alg, int* ord, bool cont_m, char direction, char c_typ);
+	void permuting(int alg, long int* ord, bool cont_m, char direction, char c_typ);
+	std::vector<long int>* prefered_cont_order(long int targ);
+	bool check(QCircuit* q_cir);
+
 
 
 
@@ -83,8 +95,10 @@ private:
 	int b_len;
 	QCircuit* out_f;
 	QCircuit* out_b;
-	std::vector<int>* order;
+	std::vector<long int>* order;
+	std::unordered_map<long int, int>* prefered_cont;//for the gate_syns_simp_cont alg
 	Control_generator* c_g;
+	Map* t_map;
 };
 /*
 int main() {

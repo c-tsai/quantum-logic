@@ -10,8 +10,8 @@ class Control_lines {
 public:
 	Control_lines(int len) {
 		bit_len = len;
-		lib = new std::set<int>*[len+1];
-		for (int i = 0; i <= len; i++) { lib[i] = new std::set<int>; }
+		lib = new std::set<long int>*[len+1];
+		for (int i = 0; i <= len; i++) { lib[i] = new std::set<long int>; }
 		mn = 0; mx = 0; 
 	}
 	~Control_lines() { 
@@ -22,7 +22,7 @@ public:
 
 	class iterator{
 	public:
-		iterator(const std::set<int>::iterator& i, Control_lines* c, int id){
+		iterator(const std::set<long int>::iterator& i, Control_lines* c, int id){
 			iter = i; iterid = id; origin = c; mx = c->mx;
 			end = c->get_group(id)->end();}
 		iterator(int id) { iterid = id; }
@@ -41,16 +41,16 @@ public:
 			//std::cout << "comparing iterid: " << iterid << " origin: "<< origin <<std::endl;
 			//std::cout << "and iterid: " << other.iterid << " origin: " << other.origin  << std::endl;
 			return ((iter != other.iter) || (origin != other.origin) || (iterid != other.iterid)); }
-		int element() {
+		long int element() {
 			//std::cout << *iter << std::endl;
 			return *iter; }
-		virtual int first() { return 0; }
-		virtual std::vector<int>* second() { return 0; }
+		virtual long int first() { return 0; }
+		virtual std::vector<long int>* second() { return 0; }
 		//int iterid; //for testing
 	protected:
 		Control_lines* origin;
-		std::set<int>::iterator iter;
-		std::set<int>::iterator end;
+		std::set<long int>::iterator iter;
+		std::set<long int>::iterator end;
 		int iterid; //the real one
 		int mx;
 	};
@@ -64,22 +64,22 @@ public:
 
 
 
-	void pop(int line, int b_num = -1);
-	void unioning(std::set<int>* other, int b_num);
+	void pop(long int line, int b_num = -1);
+	void unioning(std::set<long int>* other, int b_num);
 	//void add(int line, int b_num = -1);// for testing put in public
 	//bool contain(int targ, int b_num = -1);// for testing put in public
-	std::set<int>* max_group() { return lib[mx]; };
-	std::set<int>* min_group() { return lib[mn]; };
-	std::set<int>* get_group(int key) { return lib[key]; };
+	std::set<long int>* max_group() { return lib[mx]; };
+	std::set<long int>* min_group() { return lib[mn]; };
+	std::set<long int>* get_group(int key) { return lib[key]; };
 	int get_max() { return mx; }
 	bool empty() { return begin() == end(); }
 
 protected:
-	void add(int line, int b_num = -1); //the real private add
-	bool contain(int targ, int b_num = -1); //the real private one
+	void add(long int line, int b_num = -1); //the real private add
+	bool contain(long int targ, int b_num = -1); //the real private one
 	
 	
-	std::set<int>** lib;
+	std::set<long int>** lib;
 	int bit_len;
 	int mn;
 	int mx;
@@ -91,14 +91,14 @@ protected:
 class Control_lib: public Control_lines{
 public:
 	Control_lib(int len): Control_lines(len) {
-		lib = new std::unordered_map<int, std::vector<int>*>* [len + 1];
+		lib = new std::unordered_map<long int, std::vector<long int>*>* [len + 1];
 		for (int i = 0; i <= len; i++) { 
-			lib[i] = new std::unordered_map<int, std::vector<int>*>;
+			lib[i] = new std::unordered_map<long int, std::vector<long int>*>;
 		}
 	}
 	class iterator : public Control_lines::iterator {
 	public:
-		iterator(const std::unordered_map<int, std::vector<int>*>::iterator& i, Control_lib* c, int id):Control_lines::iterator(id){
+		iterator(const std::unordered_map<long int, std::vector<long int>*>::iterator& i, Control_lib* c, int id):Control_lines::iterator(id){
 			iter = i;  origin = c; mx = c->get_max();
 			end = c->get_group(id)->end();
 		}
@@ -119,11 +119,11 @@ public:
 			//std::cout << "and iterid: " << other.iterid << " origin: " << other.origin << std::endl;
 			return ((iter != other.iter) || (origin != other.origin) || (iterid != other.iterid));
 		}
-		int first() { return iter->first; }
-		std::vector<int>* second() { return iter->second; }
+		long int first() { return iter->first; }
+		std::vector<long int>* second() { return iter->second; }
 	private:
-		std::unordered_map<int, std::vector<int>*>::iterator iter;
-		std::unordered_map<int, std::vector<int>*>::iterator end;
+		std::unordered_map<long int, std::vector<long int>*>::iterator iter;
+		std::unordered_map<long int, std::vector<long int>*>::iterator end;
 		Control_lib* origin;
 	};
 	iterator begin() {return iterator(lib[mn]->begin(), this, mn);}
@@ -131,17 +131,17 @@ public:
 	friend class Control_generator;
 
 	
-	void pop(int line, int b_num = -1);
+	void pop(long int line, int b_num = -1);
 	//void add(int key, std::vector<int>* clines, int b_num = -1);// public for testing
 	//Control_lines* get(int targ, int b_num = -1);// public for testing
-	std::unordered_map<int, std::vector<int>*>* get_group(int key) { return lib[key]; }
+	std::unordered_map<long int, std::vector<long int>*>* get_group(int key) { return lib[key]; }
 
 private:
-	void add(int key, std::vector<int>* clines, int b_num = -1);// real private one
-	std::vector<int>* get(int targ, int b_num = -1);// real private one
-	bool contain(int line, int b_num);
+	void add(long int key, std::vector<long int>* clines, int b_num = -1);// real private one
+	std::vector<long int>* get(long int targ, int b_num = -1);// real private one
+	bool contain(long int line, int b_num);
 
-	std::unordered_map<int, std::vector<int>*>** lib;
+	std::unordered_map<long int, std::vector<long int>*>** lib;
 	
 };
 
@@ -157,9 +157,9 @@ public:
 		for (int i = 0; i < len; i++) { each_num[i] = 0; }
 	}
 	~Control_generator() { delete lib, unable; delete[]  each_num; }
-	void remove(int targ);
-	void combine(std::vector<int>* b_list, int targ, int num);
-	std::vector<int>* best_clines(int bit1, int controled);
+	void remove(long int targ);
+	void combine(std::vector<long int>* b_list, long int targ, int num);
+	std::vector<long int>* best_clines(long int bit1, long int controled);
 	//Control_lines* unable;//for testing
 	//Control_lib* lib;//for testing
 

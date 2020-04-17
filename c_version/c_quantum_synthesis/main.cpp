@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
 	QCircuit* qc = qcs->output();
 	bool right_res = true;
-	int c = 0;
+	//int c = 0;
 	//std::cout << "complete" << std::endl;
 	for (auto i = t->begin(); i != t->end(); i++) { 
 		//std::cout << i->first << std::endl;
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 			right_res = false;  break;
 		}
 		else { /*std::cout << i->first << " checked " << std::endl;*/ }
-		c++;
+		//c++;
 	}
 	if (right_res) {
 		std::cout << "length: " << qc->cost('l') << "   qcost(NCV-111): " << qc->cost('q') << "    time: " << ((float)time / CLOCKS_PER_SEC) << " (sec)" << std::endl;
