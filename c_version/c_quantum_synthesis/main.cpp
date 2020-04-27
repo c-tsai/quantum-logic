@@ -1,4 +1,5 @@
 ﻿#include "synthesizer.h"
+#include <fstream>
 #include <stdexcept>
 #include <ctime>
 
@@ -59,6 +60,10 @@ int main(int argc, char** argv) {
 		//c++;
 	}
 	if (right_res) {
+		std::ofstream res;
 		std::cout << "length: " << qc->cost('l') << "   qcost(NCV-111): " << qc->cost('q') << "    time: " << ((float)time / CLOCKS_PER_SEC) << " (sec)" << std::endl;
+		res.open("result.txt");
+		res << qc->text();
+		res.close();
 	}
 }

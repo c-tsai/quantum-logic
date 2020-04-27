@@ -1,6 +1,7 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
+#include <string>
 
 
 //remember to check if dict could be implement into an array
@@ -14,6 +15,8 @@ public:
 	virtual int control_num() { return 0; }
 	virtual char bit1_symb() { return 0; }
 	virtual char bit2_symb() { return 0; }
+	virtual std::string text(){return "";}
+
 	
 private:
 	int length;
@@ -28,6 +31,7 @@ public:
 	int control_num();
 	char bit1_symb() { return '.'; }
 	char bit2_symb() { return '+'; }
+	std::string text() ;
 private: 
 	int cont_n;
 };
@@ -73,6 +77,7 @@ public:
 	void set_typ(char c) { typ = c; }
 	void set_targ(long int t) { targ = t; }
 	char get_typ() { return typ; }
+	std::string text();
 
 
 private:

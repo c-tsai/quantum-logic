@@ -51,7 +51,7 @@ void QCSynthesizer::algorithm_selector(int alg, long int* ord, bool cont_m, char
 QCircuit* QCSynthesizer::gate_syns(long int i_b, long int f_b, char typ, bool cont_m, char c_typ) {
 	//std::cout << typ<< " target_bit " << f_b << std::endl;
 	if (!cont_m) { QCircuit* c = gate_syns_simp(i_b, f_b); c->set_typ(typ); return c; }
-	else{ QCircuit* c = gate_syns_simp_cont(i_b, f_b); c->set_typ(typ); return c; }
+	//else{ QCircuit* c = gate_syns_simp_cont(i_b, f_b); c->set_typ(typ); return c; }
 	//std::cout << "starting" << std::endl; 
 	QCircuit* res = new QCircuit(); long int b = i_b;
 	if ((i_b == -1) || (f_b == -1)) { return res; }
@@ -343,14 +343,14 @@ void QCSynthesizer::traverse(long int targ) {
 	table_h->traverse_pop(targ);
 	long int point=1;
 	for(int i =0; i<b_len; i++){
-		std::cout << targ << ',' << point <<std::endl; 
+		//std::cout << targ << ',' << point <<std::endl; 
 		if((targ&point)==0){
 			prefered_cont->find(point)->second = prefered_cont->find(point)->second +1; }
 		point = point << 1;}
-	std::cout << '{';
+	/*std::cout << '{';
 	for(auto i=prefered_cont->begin(); i!=prefered_cont->end(); i++){
 		std::cout << i->first << ':' << i->second << ',';
-	} std::cout << '}' << std::endl;
+	} std::cout << '}' << std::endl;*/
 }
 void QCSynthesizer::given_order_alg(long int* ord, int len, bool cont_m, char direction, char c_typ) {
 	for (int i = 0; i!=len; i++){

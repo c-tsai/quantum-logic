@@ -1,6 +1,8 @@
 #include <algorithm>
 #include "table.h"
 #include "gates.h"
+//#include <iostream>//for testing
+
 long int TofoliGate::inf(long int bit) {
 	//std::cout << bit<< 't' << endl;
 	if (bit == -1) { return -1; }
@@ -13,6 +15,23 @@ int TofoliGate::control_num() {
 		cont_n = Hamming_Dist(get_bit1(), 0, get_length());}
 	//std::cout << cont_n;
 	return cont_n;
+}
+
+std::string TofoliGate::text(){
+	int point = 1;
+	std::string res = "";
+	for (int i =0; i<get_length(); i++){
+		//std::cout << res << i << std::endl;
+		if((point&get_bit2())!=0){res = res + std::to_string(i);break;}
+		point = point <<1;}
+	point =1;
+	for (int i =0; i<get_length(); i++){
+		///std::cout << res << i << std::endl;
+		if((point&get_bit1())!=0){
+			res = res + " ";
+			res = res + std::to_string(i);}
+		point = point <<1;}
+	return res;
 }
 
 long int SwapGate::inf(long int bit) {
@@ -73,3 +92,10 @@ QCircuit* QCircuit::copy() {
 }
 
 
+std::string QCircuit::text(){
+	std::string res = "";
+	for (auto i = q_vec->begin(); i != q_vec->end(); i++){
+		res = res + (*i)->text();
+		res = res + "\n";}
+	return res;
+}
