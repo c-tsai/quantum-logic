@@ -13,6 +13,8 @@ public:
 	long int get_bit2() { return bit2; }
 	int get_length() { return length; }
 	virtual int control_num() { return 0; }
+	char get_bit1_symb() { return bit1_symb(); }
+	char get_bit2_symb() { return bit2_symb(); }
 	virtual char bit1_symb() { return 0; }
 	virtual char bit2_symb() { return 0; }
 	virtual std::string text(){return "";}
@@ -29,8 +31,8 @@ public:
 	TofoliGate(long int control, long int invert, int len) : Gate(control, invert, len) { cont_n = -1; }
 	long int inf(long int bit) ;
 	int control_num();
-	char bit1_symb() { return '.'; }
-	char bit2_symb() { return '+'; }
+	virtual char bit1_symb() { return '.'; }
+	virtual char bit2_symb() { return '+'; }
 	std::string text() ;
 private: 
 	int cont_n;
@@ -40,8 +42,8 @@ class SwapGate : public Gate {
 public:
 	SwapGate(long int swap1, long int swap2, int len) : Gate(swap1, swap2, len) {}
 	long int inf(long int bit);
-	char bit1_symb() { return 's'; }
-	char bit2_symb() { return 's'; }
+	virtual char bit1_symb() { return 's'; }
+	virtual char bit2_symb() { return 's'; }
 };
 
 class QCircuit {
@@ -91,10 +93,11 @@ private:
 inline std::ostream &operator<<(std::ostream &os, Gate* g) {
 	os << "--";
 	long int c = g->get_bit1(); long int inv = g->get_bit2();
-	//os << std::endl;
+	//os << c << ' ' << inv << std::endl;
 	for (int i = 0; i < g->get_length(); i++) {
-		if (c % 2 == 1) { os << g->bit1_symb() << "--"; }
-		else if (inv % 2 == 1) { os << g->bit2_symb() << "--"; }
+		//g->get_bit1_symb();
+		if (c % 2 == 1) {  os << ".--"; }
+		else if (inv % 2 == 1) {  os << "+--"; }
 		else { os << "---"; }
 		//os << i << std::endl;
 		c = c / 2; inv = inv / 2;
@@ -107,7 +110,7 @@ inline std::ostream &operator<<(std::ostream &os, Gate* g) {
 inline std::ostream &operator<<(std::ostream &os, QCircuit* c) { 
 	//int count =0;
 	for (auto it = c->vec_begin(); it != c->vec_end(); it++)
-		{//os << count << "***********"<< std::endl; 
+		{//os << count << "***********"<< std::endl; count++ ;
 		 os << (*it) << std::endl; }return os;}
  
 /*

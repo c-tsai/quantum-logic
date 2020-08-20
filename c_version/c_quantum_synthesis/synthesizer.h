@@ -78,7 +78,7 @@ private:
 	void update_table_b();
 	void update_table_f();
 	void update_table_h();
-	void traverse(long int targ);
+	void traverse(long int targ, bool no_care);
 	void given_order_alg(long int* ord, int len, bool cont_m, char direction, char c_typ);
 	void dynamic_proto(int alg, bool cont_m, char direction, char c_typ);
 	void permuting(int alg, long int* ord, bool cont_m, char direction, char c_typ);

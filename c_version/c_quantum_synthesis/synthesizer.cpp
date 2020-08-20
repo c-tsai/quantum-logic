@@ -51,9 +51,10 @@ void QCSynthesizer::algorithm_selector(int alg, long int* ord, bool cont_m, char
 QCircuit* QCSynthesizer::gate_syns(long int i_b, long int f_b, char typ, bool cont_m, char c_typ) {
 	//std::cout << typ<< " target_bit " << f_b << std::endl;
 	if (!cont_m) { QCircuit* c = gate_syns_simp(i_b, f_b); c->set_typ(typ); return c; }
-	//else{ QCircuit* c = gate_syns_simp_cont(i_b, f_b); c->set_typ(typ); return c; }
+	else{ QCircuit* c = gate_syns_simp_cont(i_b, f_b); c->set_typ(typ); return c; }
 	//std::cout << "starting" << std::endl; 
-	QCircuit* res = new QCircuit(); long int b = i_b;
+	QCircuit* res = new QCircuit(); 
+	long int b = i_b;
 	if ((i_b == -1) || (f_b == -1)) { return res; }
 	//std::cout << "starting" << std::endl;
 	while (b != f_b) {
@@ -105,7 +106,8 @@ QCircuit* QCSynthesizer::gate_syns_simp(long int i_b, long int f_b) {
 	for (int i = 0; i != b_len; i++) {
 		//std::cout << point << std::endl;
 		if ((diff_0 & point) != 0) {
-			Gate* t = new TofoliGate(i_b, point, b_len); std::vector < Gate* > t_vec;
+			Gate* t = new TofoliGate(i_b, point, b_len); 
+			std::vector < Gate* > t_vec;
 			t_vec.push_back(t);
 			QCircuit* t_cir = new QCircuit(&t_vec);
 			res->add(t_cir, 'f');
@@ -133,60 +135,91 @@ QCircuit* QCSynthesizer::gate_syns_simp_cont(long int i_b, long int f_b) {
 	//std::cout << table_f << std::endl;
 	long int diff_1 = (i_b ^ f_b) & i_b;
 	long int diff_0 = (i_b ^ f_b) & f_b;
-	long int point = 1;
-	std::vector<long int>* cand0 = prefered_cont_order(i_b);
-	std::vector<long int>* cand1 = prefered_cont_order(i_b+diff_0-diff_1);
-	for (int i = 0; i != b_len; i++) {
-		//std::cout << point << std::endl;
+	long int point;
+	long int b = i_b;
+        while(b!=f_b){
+	   point = 1;
+	   for (int i = 0; i != b_len; i++) {
+		if(b == f_b) break;
+		//std::cout << b  << " " << point << " " << f_b << std::endl;
+		//std::cout << res << std::endl;
 		if ((diff_0 & point) != 0) {
 			long int cont_fin= 0;
+	                std::vector<long int>* cand = prefered_cont_order(b);
+			//std::cout << "DECLARE cand" << res << std::endl;
 			Gate* t = new TofoliGate(cont_fin, point, b_len); 
+			//std::cout << "DECLARE temp gate" << res << std::endl;
 			std::vector < Gate* >* t_vec= new std::vector<Gate*>;
+			//std::cout << "DECLARE temp vector" << res << std::endl;
 			t_vec->push_back(t);
+			//std::cout << "put temp gate to temp_vector" << res << std::endl;
 			QCircuit* t_cir = new QCircuit(t_vec);
+			//std::cout << "declare temp circuit" << res << std::endl;
 			if(!check(t_cir)){
-				delete t, t_vec, t_cir;
-				for(auto i=cand0->begin();i!=cand0->end();i++){
-					//std::cout << cont_fin << std::endl;
+				delete t, t_vec, t_cir; t_cir = 0;
+				for(auto i=cand->begin();i!=cand->end();i++){
 					cont_fin += *i;
+					//std::cout << cont_fin << std::endl;
 					Gate* t_temp = new TofoliGate(cont_fin, point, b_len); 
 					std::vector < Gate* >* t_vec_temp = new std::vector<Gate*>;
 					t_vec_temp->push_back(t_temp);
 					t_cir = new QCircuit(t_vec_temp);
-					if(check(t_cir)){break;}
 					//std::cout << t_cir<< std::endl;
-					delete t_temp, t_vec_temp, t_cir;
+					if(check(t_cir)){break;}
+					delete t_temp, t_vec_temp, t_cir; 
+					t_cir =0; t_temp=0; t_vec_temp=0;
 				}
 			}
-			res->add(t_cir, 'f');
-		}point = point << 1;
-	}point = 1;
-	for (int i = 0; i != b_len; i++) {
-		//std::cout << point << std::endl;
-		if ((diff_1 & point) != 0) {
+			//std::cout << t_cir<< std::endl;
+			if(t_cir != 0) {
+				if(t_cir->size() != 0){
+				//std::cout << res << std::endl;
+				res->add(t_cir, 'f');
+				//std::cout << res << std::endl;
+                        	b = b+ point;
+				diff_0 = diff_0 - point;
+				}
+			} 
+			t=0; t_vec=0; t_cir=0;
+			delete cand; 
+		}else if((diff_1 & point)!= 0){
 			long int cont_fin= 0;
+			std::vector<long int>* cand = prefered_cont_order(b-point);
 			Gate* t = new TofoliGate(cont_fin, point, b_len); 
-			std::vector < Gate* >* t_vec = new std::vector<Gate*>;
+			std::vector < Gate* >* t_vec= new std::vector<Gate*>;
 			t_vec->push_back(t);
 			QCircuit* t_cir = new QCircuit(t_vec);
-			if(!check(t_cir)){
-				delete t, t_vec, t_cir;
-				for(auto i=cand1->begin();i!=cand1->end();i++){
+			if(!check(t_cir))
+				{delete t, t_vec, t_cir; t_cir =0;
+				for(auto i=cand->begin();i!=cand->end();i++){
 					cont_fin += *i;
 					//std::cout << cont_fin << std::endl;
 					Gate* t_temp = new TofoliGate(cont_fin, point, b_len); 
-					std::vector < Gate* >* t_vec_temp= new std::vector<Gate*>;
+					std::vector < Gate* >* t_vec_temp = new std::vector<Gate*>;
 					t_vec_temp->push_back(t_temp);
 					t_cir = new QCircuit(t_vec_temp);
-					if(check(t_cir)){break;}
 					//std::cout << t_cir<< std::endl;
-					delete t_temp, t_vec_temp, t_cir;
+					if(check(t_cir)){break;}
+					delete t_temp, t_vec_temp, t_cir; t_cir=0;
+					t_cir =0; t_temp=0; t_vec_temp=0;
+				}
+			}//std::cout << t_cir<< std::endl;
+			if(t_cir != 0){
+				if (t_cir->size() != 0){
+				//std::cout << res << std::endl;
+				res->add(t_cir, 'f');
+				//std::cout << res << std::endl;
+				b = b-point;
+				diff_1 = diff_1 - point;
 				}
 			}
-			res->add(t_cir, 'f');
-		}point = point << 1;
-	}//std::cout << res << std::endl;
-	delete cand0, cand1;
+			t=0; t_vec=0; t_cir=0;
+			delete cand; 
+		}
+		//std::cout << "point switching " << std::endl;
+		point = point << 1;
+	   }
+	}
 	return res;
 }
 
@@ -335,12 +368,13 @@ void QCSynthesizer::update_table_h() {
 	for (auto i = table_f->begin(); i != table_f->end(); i++) {
 		table_h->set_value(i->first, Hamming_Dist(i->first,i->second,b_len));}
 }
-void QCSynthesizer::traverse(long int targ) {
+void QCSynthesizer::traverse(long int targ, bool no_care=false) {
 	c_g->remove(targ);
 	order->push_back(targ);
 	table_b->traverse_pop(targ);
 	table_f->traverse_pop(targ);
 	table_h->traverse_pop(targ);
+        if(no_care){return;}
 	long int point=1;
 	for(int i =0; i<b_len; i++){
 		//std::cout << targ << ',' << point <<std::endl; 
@@ -378,13 +412,13 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 	traverse(0);
 	t_map->traverse(0, c_g);
 	bool conti = true;
-	//int count = 0;
+	int count = 0;
 	//std::cout << "table_f: " << table_f << std::endl;
 	//std::cout << "table_b: " << table_b << std::endl;
 	while (!(t_map->available()->empty()) && conti ) {
 		QCircuit* cir = 0;
-		//count++;
-		//std::cout << count << std::endl;
+		count++;
+		//std::cout << count << "---------" << std::endl;
 		/*std::cout << '{' ;
 		for(auto i = t_map->available()->begin(); i!=t_map->available()->end();i++){std::cout << i.element() << ',';}
 		std::cout << '}' << std::endl;*/
@@ -398,10 +432,15 @@ void QCSynthesizer::dynamic_proto(int alg, bool cont_m, char direction, char c_t
 		//std::cout << cir << std::endl;
 		//std::cout << "table_f: " << table_f << std::endl;
 		//std::cout << "table_b: " << table_b << std::endl;
+		bool no_care = ((table_b->get_value(cir->get_targ()) < 0) && (table_f->get_value(cir->get_targ()) < 0 ) );
+		//std::cout << "compute no_care complete" << std::endl;
 		add(cir, cir->get_typ());
-		traverse(cir->get_targ());
+		//std::cout << "add complete" << std::endl;
+		traverse(cir->get_targ(), no_care);
+		//std::cout << "traverse complete" << std::endl;
 		long int targ = cir->get_targ();
 		t_map->traverse(targ,c_g,!(table_b->get_value(targ)==-1 && table_f->get_value(targ) == -1));
+		//std::cout << "map traverse complete" << std::endl;
 		conti = false;
 		delete cir;
 		/*
