@@ -4,12 +4,14 @@
 #include <ctime>
 
 
-/* Using ways: ./a.exe  spec.pla  alg_type  if_controled_min  direction  cost_type  
+/* Using ways: ./a.exe  spec.pla  alg_type  if_controled_min  direction  cost_type  out.real
    
+   spec.pla          :input specification file
    alg_type          :given order=-1/ DFS=0/ BFS=1/ Dym =2/ Dym_DFS=3
    if_controled_min  :True/ False
    directiona        :bi-/ uni- direction
    cost_typ          :length/ qcost
+   out.real          :output realization filw
 */
  
 
@@ -62,7 +64,7 @@ int main(int argc, char** argv) {
 	if (right_res) {
 		std::ofstream res;
 		std::cout << "length: " << qc->cost('l') << "   qcost(NCV-111): " << qc->cost('q') << "    time: " << ((float)time / CLOCKS_PER_SEC) << " (sec)" << std::endl;
-		res.open("result.txt");
+		res.open(argv[6]);
 		res << qc->text();
 		res.close();
 	}

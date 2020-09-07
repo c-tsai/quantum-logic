@@ -19,7 +19,7 @@ int TofoliGate::control_num() {
 
 std::string TofoliGate::text(){
 	int point = 1;
-	std::string res = "";
+	std::string res = "x";
 	for (int i =0; i<get_length(); i++){
 		//std::cout << res << i << std::endl;
 		if((point&get_bit2())!=0){res = res + std::to_string(i);break;}
@@ -28,7 +28,7 @@ std::string TofoliGate::text(){
 	for (int i =0; i<get_length(); i++){
 		///std::cout << res << i << std::endl;
 		if((point&get_bit1())!=0){
-			res = res + " ";
+			res = res + " x";
 			res = res + std::to_string(i);}
 		point = point <<1;}
 	return res;
@@ -93,9 +93,38 @@ QCircuit* QCircuit::copy() {
 
 
 std::string QCircuit::text(){
-	std::string res = "";
+	std::string res = ".version 2.0\n.variables";
+	int len = (*(q_vec->begin()))->get_length();
+	for (int i =0; i!= len; i++) {
+		res = res + " x";
+		res = res + std::to_string(i);
+	}
+	res = res + "\n.inputs";
+	for (int i =0; i!= len; i++) {
+		res = res + " x";
+		res = res + std::to_string(i);
+	}
+	res = res + "\n.outputs";
+	for (int i =0; i!= len; i++) {
+		res = res + " y";
+		res = res + std::to_string(i);
+	}
+	res = res + "\n.constants ";
+	for (int i =0; i!= len; i++) {
+		res = res + "-";
+	}
+	res = res + "\n.garbage ";
+	for (int i =0; i!= len; i++) {
+		res = res + "-";
+	}
+	res = res + "\n.begin\n";
+
+
 	for (auto i = q_vec->begin(); i != q_vec->end(); i++){
 		res = res + (*i)->text();
 		res = res + "\n";}
 	return res;
+
+
+	res = res + "\n.end\n";
 }
