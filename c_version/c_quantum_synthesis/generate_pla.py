@@ -31,7 +31,7 @@ for row in my_reader:
         if row[i] != -1:
             f.write('{0:03b}'.format(i)+ ' '+ '{0:03b}'.format(int(float(row[i])))+'\n')
     f.close()
-    string = os.popen('./a.out temp.pla '+str(mode)+' t bi q').read().split()
+    string = os.popen('./simp_cont_write temp.pla '+str(mode)+' t bi q temp.real').read().split()
     result[string[2], x] = result[string[2], x] + 1
     resultQ[string[4], x] = resultQ[string[4], x] + 1
     

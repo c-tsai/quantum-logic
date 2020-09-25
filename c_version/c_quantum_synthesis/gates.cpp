@@ -19,7 +19,9 @@ int TofoliGate::control_num() {
 
 std::string TofoliGate::text(){
 	int point = 1;
-	std::string res = "x";
+	std::string res = "t";
+	res = res + std::to_string(control_num() +1 );
+	res = res + " x";
 	for (int i =0; i<get_length(); i++){
 		//std::cout << res << i << std::endl;
 		if((point&get_bit2())!=0){res = res + std::to_string(i);break;}
@@ -93,8 +95,10 @@ QCircuit* QCircuit::copy() {
 
 
 std::string QCircuit::text(){
-	std::string res = ".version 2.0\n.variables";
+	std::string res = ".version 2.0\n.numvars ";
 	int len = (*(q_vec->begin()))->get_length();
+	res = res + std::to_string(len);
+	res = res + "\n.varaibles";
 	for (int i =0; i!= len; i++) {
 		res = res + " x";
 		res = res + std::to_string(i);
