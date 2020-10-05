@@ -37,7 +37,8 @@ int main(int argc, char** argv) {
 	if ((argv[3])[0] == 'T' || (argv[3])[0] == 't') {
 		std::cout << "_cont" << std::endl;
 		time = std::clock();
-		qcs->algorithm_selector(std::stoi((argv[2])), 0, true, (argv[4])[0], (argv[5])[0]);}
+		qcs->algorithm_selector(std::stoi((argv[2])), 0, true, (argv[4])[0], (argv[5])[0]);
+	}
 	else if ((argv[3])[0] == 'F' || (argv[3])[0] == 'f') {
 		std::cout << std::endl;
 		time = std::clock();
@@ -49,10 +50,11 @@ int main(int argc, char** argv) {
 
 	QCircuit* qc = qcs->output();
 	bool right_res = true;
+	
 	//int c = 0;
 	//std::cout << "complete" << std::endl;
 	for (auto i = t->begin(); i != t->end(); i++) { 
-		//std::cout << i->first << std::endl;
+		std::cout << qc->size() << std::endl;
 		if (qc->inf(i->first) != i->second) {
 			std::cout << qc << std::endl;
 			std::cout << "wrong result( need " << i->second << " for " << i->first << " but got " << qc->inf(i->first) << " instead)"; 
@@ -61,11 +63,12 @@ int main(int argc, char** argv) {
 		else { /*std::cout << i->first << " checked " << std::endl;*/ }
 		//c++;
 	}
+	
 	if (right_res) {
 		std::ofstream res;
 		std::cout << "length: " << qc->cost('l') << "   qcost(NCV-111): " << qc->cost('q') << "    time: " << ((float)time / CLOCKS_PER_SEC) << " (sec)" << std::endl;
-		res.open(argv[6]);
-		res << qc->text();
-		res.close();
+		//res.open(argv[6]);
+		//res << qc->text();
+		//res.close();
 	}
 }

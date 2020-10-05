@@ -10,42 +10,42 @@ public:
 	//int length;
 	Table(int l) {
 		length = l;
-		lib = new std::unordered_map<long int, long int>;
+		lib = new std::unordered_map<size_t, size_t>;
 	}
 	~Table() { delete lib; }
-	long int get_value(int i) {
+	size_t get_value(int i) {
 		//std::cout << i << "--------" << std::endl;
 		//for (auto it = lib->begin(); it != lib->end(); it++) { std::cout << it->first <<' ' <<it->second << std::endl; }
-		std::unordered_map<long int, long int>::const_iterator got = lib->find(i);
+		std::unordered_map<size_t, size_t>::const_iterator got = lib->find(i);
 		//return 0;
 		if (got == lib->end()) { return -1; }
 		else { return got->second; }
 	}
-	void set_value(long int b1, long int b2) {
+	void set_value(size_t b1, size_t b2) {
 		//std::cout << b1 << b2 << std::endl;
-		lib->insert(std::pair<long int, long int>(b1, b2));
+		lib->insert(std::pair<size_t, size_t>(b1, b2));
 	}
-	long int summ();
+	size_t summ();
 	int len() { return length; }
 	Table* new_copy() {
 		Table* t = new Table(length);
 		for (auto i = begin(); i != end(); i++) { t->set_value(i->first, i->second); }
 		return t;
 	}
-	std::unordered_map<long int, long int>::iterator begin() { return lib->begin(); }
-	std::unordered_map<long int, long int>::iterator end() { return lib->end(); }
-	void traverse_pop(long int targ) { lib->erase(targ); }
+	std::unordered_map<size_t, size_t>::iterator begin() { return lib->begin(); }
+	std::unordered_map<size_t, size_t>::iterator end() { return lib->end(); }
+	void traverse_pop(size_t targ) { lib->erase(targ); }
 
 private:
 	int length;
-	std::unordered_map<long int, long int>* lib;
+	std::unordered_map<size_t, size_t>* lib;
 
 
 };
 
-std::vector<long int>* bit_list(long int targ, int bit_len);
+std::vector<size_t>* bit_list(size_t targ, int bit_len);
 Table* pla_reader(std::string file_name);
-int Hamming_Dist(long int bit1, long int bit2, int b_len);
+int Hamming_Dist(size_t bit1, size_t bit2, int b_len);
 inline std::ostream& operator<<(std::ostream& os, Table* t) {
 	os << '{';
 	for (auto it = t->begin(); it != t->end(); it++) {

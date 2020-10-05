@@ -4,7 +4,7 @@
 #include <iterator>
 
 
-void Control_lines::pop(long int line, int b_num) {
+void Control_lines::pop(size_t line, int b_num) {
 	int b = (b_num == -1) ? Hamming_Dist(line, 0, bit_len) : b_num;
 	auto got = lib[b]->find(line);
 	if (got != lib[b]->end()) { lib[b]->erase(got); }
@@ -17,15 +17,15 @@ void Control_lines::pop(long int line, int b_num) {
 		}
 	}
 }
-void Control_lines::unioning(std::set<long int>* other, int b_num ) {
-		std::set<long int>* neww = new std::set<long int>; int b = b_num;
+void Control_lines::unioning(std::set<size_t>* other, int b_num ) {
+		std::set<size_t>* neww = new std::set<size_t>; int b = b_num;
 		std::set_union(lib[b]->begin(), lib[b]->end(), 
 			other->begin(), other->end(), std::inserter(*neww,neww->end()));
 		if (b > mx) { mx = b; }
 		if (b < mn) { mn = b; }
 		delete lib[b]; lib[b] = neww;	
 }
-void Control_lines::add(long int line, int b_num) {
+void Control_lines::add(size_t line, int b_num) {
 	int b = (b_num == -1) ? Hamming_Dist(line, 0, bit_len) : b_num;
 	//for (auto i = lib[b]->begin(); i != lib[b]->end(); i++) { std::cout << *i; }//for testing
 	//std::cout << "if the set empty " << lib[b]->empty() << std::endl;
@@ -37,7 +37,7 @@ void Control_lines::add(long int line, int b_num) {
 	if (b < mn) { mn = b; }
 	//std::cout << line << " added, mx= " << mx << " mn= " << mn << std::endl;
 }
-bool Control_lines::contain(long int line, int b_num) {
+bool Control_lines::contain(size_t line, int b_num) {
 	int b = (b_num == -1) ? Hamming_Dist(line, 0, bit_len) : b_num;
 	return ((lib[b]->find(line)) != (lib[b]->end()));
 }
@@ -45,7 +45,7 @@ bool Control_lines::contain(long int line, int b_num) {
 
 
 
-void Control_lib::pop(long int line, int b_num) {
+void Control_lib::pop(size_t line, int b_num) {
 	int b = (b_num == -1) ? Hamming_Dist(line, 0, bit_len) : b_num;
 	auto got = lib[b]->find(line);
 	if (got != lib[b]->end()) { lib[b]->erase(got); }
@@ -60,8 +60,8 @@ void Control_lib::pop(long int line, int b_num) {
 		}
 	}
 }
-void Control_lib::add(long int key, std::vector<long int>* clines, int b_num) {
-	std::pair<long int, std::vector<long int>*> targ(key, clines);
+void Control_lib::add(size_t key, std::vector<size_t>* clines, int b_num) {
+	std::pair<size_t, std::vector<size_t>*> targ(key, clines);
 	int b = (b_num == -1) ? Hamming_Dist(key, 0, bit_len) : b_num;
 	//std::cout << "inserted" << std::endl;
 	lib[b]->insert(targ);
@@ -71,18 +71,18 @@ void Control_lib::add(long int key, std::vector<long int>* clines, int b_num) {
 	if (b < mn) { mn = b; }
 	//std::cout << key << " added, mx= " << mx << " mn= " << mn << std::endl;
 }
-std::vector<long int>* Control_lib::get(long int targ, int b_num ) {
-	long int b = (b_num == -1) ? Hamming_Dist(targ, 0, bit_len) : b_num;
+std::vector<size_t>* Control_lib::get(size_t targ, int b_num ) {
+	size_t b = (b_num == -1) ? Hamming_Dist(targ, 0, bit_len) : b_num;
 	return lib[b]->find(targ)->second;
 }
-bool Control_lib::contain(long int line, int b_num) {
+bool Control_lib::contain(size_t line, int b_num) {
 	int b = (b_num == -1) ? Hamming_Dist(line, 0, bit_len) : b_num;
 	return ((lib[b]->find(line)) != (lib[b]->end()));
 }
 
 
 
-void Control_generator::remove(long int targ) {
+void Control_generator::remove(size_t targ) {
 	int b_num = Hamming_Dist(targ, 0, bit_len);
 	unable->add(targ, b_num);
 	each_num[b_num]++;
@@ -92,41 +92,41 @@ void Control_generator::remove(long int targ) {
 		allowed_num = allowed_num / smllst_b;
 	}
 }
-void Control_generator::combine(std::vector<long int>* b_list, long int targ, int num) {
+void Control_generator::combine(std::vector<size_t>* b_list, size_t targ, int num) {
 	//std::cout << "combine with num=" << num << " targ=" << targ << " b_list size=" << b_list->size() << std::endl;
 	if (num == 0) {
 		//std::cout << "detect num=0" << std::endl;
-		std::vector<long int>* zero = new std::vector<long int>; 
+		std::vector<size_t>* zero = new std::vector<size_t>; 
 		zero->push_back(0); lib->add(targ, zero, 0);
 	}
 	if (b_list->size() == num) {
-		std::vector<long int>* t_list = new std::vector<long int>;
+		std::vector<size_t>* t_list = new std::vector<size_t>;
 		t_list->push_back(targ); lib->add(targ, t_list, num); 
 	}
 	if (lib->contain(targ, num)) { /*std::cout << "must be returning" << std::endl;*/ return; }
-	long int b = b_list->back();
-	std::vector<long int>* sub1 = new std::vector<long int>(*b_list);
+	size_t b = b_list->back();
+	std::vector<size_t>* sub1 = new std::vector<size_t>(*b_list);
 	sub1->pop_back();
-	std::vector<long int>* sub2 = new std::vector<long int>(*sub1);
+	std::vector<size_t>* sub2 = new std::vector<size_t>(*sub1);
 	combine(sub1, targ - b, num - 1);
 	combine(sub2, targ - b, num);
 	delete sub1, sub2;
-	std::vector<long int>* res = new std::vector<long int>(*(lib->get(targ-b,num)));
+	std::vector<size_t>* res = new std::vector<size_t>(*(lib->get(targ-b,num)));
 	for (auto i = lib->get(targ - b, num - 1)->begin(); i != lib->get(targ - b, num - 1)->end(); i++) {
 		res->push_back((*i) + b);
 		//std::cout << "adding " << ((*i) + b);
 	}lib->add(targ, res, num);
 }
-std::vector<long int>* Control_generator::best_clines(long int bit1, long int controled) {
-	long int aim = (bit1 | controled) - controled;
+std::vector<size_t>* Control_generator::best_clines(size_t bit1, size_t controled) {
+	size_t aim = (bit1 | controled) - controled;
 	//std::cout << "aim= " << aim << std::endl;
-	std::vector<long int>* res = new std::vector<long int>;
+	std::vector<size_t>* res = new std::vector<size_t>;
 	if (aim == 0) {
 		//std::cout << "aim = 0" << std::endl;
 		if (!(unable->contain(0, 0))) { res->push_back(0); }
 		return res;
 	}
-	std::vector<long int>* list = bit_list(aim, bit_len);
+	std::vector<size_t>* list = bit_list(aim, bit_len);
 	int b_num = list->size();
 	for (int i = smllst_b; i <= b_num; i++) {
 		//std::cout << "b_num for now: " << b_num << std::endl;

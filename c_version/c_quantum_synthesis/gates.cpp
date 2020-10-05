@@ -3,7 +3,7 @@
 #include "gates.h"
 //#include <iostream>//for testing
 
-long int TofoliGate::inf(long int bit) {
+size_t TofoliGate::inf(size_t bit) {
 	//std::cout << bit<< 't' << endl;
 	if (bit == -1) { return -1; }
 	if ((bit&get_bit1()) == get_bit1()) { return bit^get_bit2(); }
@@ -36,17 +36,17 @@ std::string TofoliGate::text(){
 	return res;
 }
 
-long int SwapGate::inf(long int bit) {
+size_t SwapGate::inf(size_t bit) {
 	//std::cout << bit<< 's' << endl;
 	if (bit == -1) { return -1; }
-	long int b = (bit | get_bit1() |get_bit2());
+	size_t b = (bit | get_bit1() |get_bit2());
 	if ((bit&get_bit1()) == 0) { return b -= get_bit2(); }
 	if ((bit&get_bit2()) == 0) { return b -= get_bit1(); }
 	return b;
 }
 
-long int QCircuit::inf(long int bit) {
-	long int i = bit;
+size_t QCircuit::inf(size_t bit) {
+	size_t i = bit;
 	for (auto it = q_vec->begin(); it != q_vec->end(); it++) {
 		i = (*it)->inf(i);
 	}
@@ -98,7 +98,7 @@ std::string QCircuit::text(){
 	std::string res = ".version 2.0\n.numvars ";
 	int len = (*(q_vec->begin()))->get_length();
 	res = res + std::to_string(len);
-	res = res + "\n.varaibles";
+	res = res + "\n.variables";
 	for (int i =0; i!= len; i++) {
 		res = res + " x";
 		res = res + std::to_string(i);

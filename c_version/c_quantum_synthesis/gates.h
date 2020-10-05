@@ -7,10 +7,10 @@
 //remember to check if dict could be implement into an array
 class Gate {
 public:
-	Gate(long int b1, long int b2, int len) :length(len), bit1(b1), bit2(b2){}
-	virtual long int inf(long int bit) { return -1; }
-	long int get_bit1() { return bit1; }
-	long int get_bit2() { return bit2; }
+	Gate(size_t b1, size_t b2, int len) :length(len), bit1(b1), bit2(b2){}
+	virtual size_t inf(size_t bit) { return -1; }
+	size_t get_bit1() { return bit1; }
+	size_t get_bit2() { return bit2; }
 	int get_length() { return length; }
 	virtual int control_num() { return 0; }
 	char get_bit1_symb() { return bit1_symb(); }
@@ -22,14 +22,14 @@ public:
 	
 private:
 	int length;
-	long int bit1;
-	long int bit2;
+	size_t bit1;
+	size_t bit2;
 };
 
 class TofoliGate: public Gate {
 public:
-	TofoliGate(long int control, long int invert, int len) : Gate(control, invert, len) { cont_n = -1; }
-	long int inf(long int bit) ;
+	TofoliGate(size_t control, size_t invert, int len) : Gate(control, invert, len) { cont_n = -1; }
+	size_t inf(size_t bit) ;
 	int control_num();
 	virtual char bit1_symb() { return '.'; }
 	virtual char bit2_symb() { return '+'; }
@@ -40,8 +40,8 @@ private:
 
 class SwapGate : public Gate {
 public:
-	SwapGate(long int swap1, long int swap2, int len) : Gate(swap1, swap2, len) {}
-	long int inf(long int bit);
+	SwapGate(size_t swap1, size_t swap2, int len) : Gate(swap1, swap2, len) {}
+	size_t inf(size_t bit);
 	virtual char bit1_symb() { return 's'; }
 	virtual char bit2_symb() { return 's'; }
 };
@@ -71,13 +71,13 @@ public:
 	std::vector<Gate*>::reverse_iterator vec_rend() { return q_vec->rend(); }
 	std::unordered_map<int, int>::iterator dict_begin() { return dict->begin(); }
 	std::unordered_map<int, int>::iterator dict_end() { return dict->end(); }
-	long int inf(long int bit);
-	long int get_targ() { return targ; }
+	size_t inf(size_t bit);
+	size_t get_targ() { return targ; }
 	int size() { return q_vec->size(); }
 	int cost(char c_typ);
 	void add(QCircuit* q_cir, char typ);
 	void set_typ(char c) { typ = c; }
-	void set_targ(long int t) { targ = t; }
+	void set_targ(size_t t) { targ = t; }
 	char get_typ() { return typ; }
 	std::string text();
 
@@ -86,13 +86,13 @@ private:
 	std::vector<Gate*>* q_vec;
 	std::unordered_map<int, int>* dict;
 	char typ;
-	long int targ;
+	size_t targ;
 
 };
 
 inline std::ostream &operator<<(std::ostream &os, Gate* g) {
 	os << "--";
-	long int c = g->get_bit1(); long int inv = g->get_bit2();
+	size_t c = g->get_bit1(); size_t inv = g->get_bit2();
 	//os << c << ' ' << inv << std::endl;
 	for (int i = 0; i < g->get_length(); i++) {
 		//g->get_bit1_symb();
